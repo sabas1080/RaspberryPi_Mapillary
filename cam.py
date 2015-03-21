@@ -19,6 +19,17 @@
 # Dropbox setup (if using the Dropbox upload feature):
 # http://raspi.tv/2013/how-to-use-dropbox-with-raspberry-pi
 #
+#sudo apt-get install python-pip
+#sudo pip install python-dateutil
+#
+#sudo apt-get install gpsd gpsd-clients python-gps
+#
+#sudo gpsd /dev/ttyUSB0 -F /var/run/gpsd.sock
+#
+#sudo cat /dev/ttyAMA0
+#
+#http://fpaez.com/tracker-gps-con-raspberry-pi/
+#
 # Written by Phil Burgess / Paint Your Dragon for Adafruit Industries.
 # BSD license, all text above must be included in any redistribution.
 
@@ -37,7 +48,10 @@ import time
 import yuv2rgb
 from pygame.locals import *
 from subprocess import call  
-
+from datetime import datetime
+from dateutil import parser
+import gps
+import math
 
 # UI classes ---------------------------------------------------------------
 
@@ -127,10 +141,70 @@ class Button:
 	        self.iconBg = i
 	        break
 
-
 # UI callbacks -------------------------------------------------------------
 # These are defined before globals because they're referenced by items in
 # the global buttons[] list.
+def wait():
+	global camera, gpsd
+	#while True:
+	report = gpsd.next()
+	#print report
+	# Wait for position information.
+	if report['class'] == 'TPV':
+		# Set orientation to normal landscape.
+		camera.exif_tags['IFD0.Orientation'] = '1'
+ 
+		# Set picture date and time to GPS values.
+		now = parser.parse(report.get('time', datetime.now().isoformat()))
+		#print now.strftime('%s')
+		camera.exif_tags['EXIF.DateTimeOriginal'] = now.strftime('%Y:%m:%d %H:%M:%S')
+ 
+		# Set altitude to GPS value.
+		alt = report.get('alt', 0.0)
+		#print alt
+		camera.exif_tags['GPS.GPSAltitudeRef'] = '0' if alt > 0 else '1'
+		aalt = math.fabs(alt)
+		camera.exif_tags['GPS.GPSAltitude'] = '%d/100' % int(100 * aalt)
+ 
+		# Convert speed from m/s to km/h and set tag.
+		speed = report.get('speed', 0.0)
+		#print speed
+		camera.exif_tags['GPS.GPSSpeedRef'] = 'K'
+		camera.exif_tags['GPS.GPSSpeed'] = '%d/1000' % int(3600 * speed)
+ 
+		# Set direction of motion and direction along which the picture is taken (assuming frontal view).
+		track = report.get('track', 0.0)
+		#print track
+		camera.exif_tags['GPS.GPSTrackRef'] = 'T'
+		camera.exif_tags['GPS.GPSTrack'] = '%d/10' % int(10 * track)
+		camera.exif_tags['GPS.GPSImgDirectionRef'] = 'T'
+		camera.exif_tags['GPS.GPSImgDirection'] = '%d/10' % int(10 * track)
+ 
+		# Set GPS latitude.
+		lat = report.get('lat', 0.0)
+		#print lat
+		camera.exif_tags['GPS.GPSLatitudeRef'] = 'N' if lat > 0 else 'S'
+		alat = math.fabs(lat)
+		dlat = int(alat)
+		mlat = int(60 * (alat - dlat))
+		slat = int(6000 * (60 * (alat - dlat) - mlat))
+		camera.exif_tags['GPS.GPSLatitude'] = '%d/1,%d/1,%d/100' % (dlat, mlat, slat)
+ 
+		# Set GPS longitude.
+		lon = report.get('lon', 0.0)
+		#print lon
+		camera.exif_tags['GPS.GPSLongitudeRef'] = 'E' if lon > 0 else 'W'
+		alon = math.fabs(lon)
+		dlon = int(alon)
+		mlon = int(60 * (alon - dlon))
+		slon = int(6000 * (60 * (alon - dlon) - mlon))
+		camera.exif_tags['GPS.GPSLongitude'] = '%d/1,%d/1,%d/100' % (dlon, mlon, slon)
+ 
+			# Provide next image file name.
+			#yield '/media/data/pictures/' + now.strftime('%s') + '.jpg'
+			#Profile
+			#camera.exif_tags['IFD0.Artist'] = 'Sabas'
+    		#camera.exif_tags['IFD0.Copyright'] = 'Copyleft (c) 2015 Sabas!'
 
 def isoCallback(n): # Pass 1 (next ISO) or -1 (prev ISO)
 	global isoMode
@@ -475,8 +549,15 @@ def takePicture():
 	camera.resolution = sizeData[sizeMode][0]
 	camera.crop       = sizeData[sizeMode][2]
 	try:
+	# Connect to gpsd.
+	  gpsd = gps.gps(mode=gps.WATCH_ENABLE)
+	  wait()
 	  camera.capture(filename, use_video_port=False, format='jpeg',
-	    thumbnail=None)
+	  thumbnail=None)
+
+	  # Start taking pictures.
+		#cam.capture_sequence(wait(), burst=True
+
 	  # Set image file ownership to pi user, mode to 644
 	  # os.chown(filename, uid, gid) # Not working, why?
 	  os.chmod(filename,
