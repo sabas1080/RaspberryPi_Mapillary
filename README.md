@@ -1,4 +1,4 @@
-Raspberry Mapillary
+**Raspberry Mapillary**
 
 Este proyecto es realizado con la intencion de integrar los elementos de 
 adafruit-pi-cam con los elementos del proyecto Mapillary
