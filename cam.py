@@ -157,8 +157,8 @@ class GpsPoller(threading.Thread):
  
   def run(self):
 	global gpsd, report
-	gpsd = gps.gps(mode=gps.WATCH_ENABLE)
-	while gpsp.running:
+	#gpsd = gps.gps(mode=gps.WATCH_ENABLE)
+	while gpsd.running:
 	  report = gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
 
 
