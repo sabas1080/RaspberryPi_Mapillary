@@ -166,7 +166,7 @@ def wait():
 	#print report
 	# Wait for position information.
 	if report['class'] == 'TPV':
-	    # Set orientation to normal landscape.
+		# Set orientation to normal landscape.
 		camera.exif_tags['IFD0.Orientation'] = '1'
  
 		# Set picture date and time to GPS values.
