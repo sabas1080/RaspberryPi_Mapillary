@@ -146,7 +146,8 @@ class Button:
 # UI callbacks -------------------------------------------------------------
 # These are defined before globals because they're referenced by items in
 # the global buttons[] list.
-def wait():
+def wait(file):
+    file=filename
 	global camera
 	#while True:
 	report = gpsd.next()
@@ -554,11 +555,11 @@ def takePicture():
 	camera.resolution = sizeData[sizeMode][0]
 	camera.crop       = sizeData[sizeMode][2]
 	try:
-	  global gpsd, filename
+	  global gpsd
 	# Connect to gpsd.
 	  print "Inicia GPS"
 	  gpsd = gps.gps(mode=gps.WATCH_ENABLE)
-	  wait()
+	  wait(filename)
 
 	  # Start taking pictures.
 		#cam.capture_sequence(wait(), burst=True
