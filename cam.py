@@ -570,7 +570,7 @@ def takePicture():
 	camera.resolution = sizeData[sizeMode][0]
 	camera.crop       = sizeData[sizeMode][2]
 	try:
-	  global gpsd
+	  #global gpsd
 	# Connect to gpsd.
 	  #print "Inicia GPS"
 	  #gpsp = GpsPoller() # create the thread
