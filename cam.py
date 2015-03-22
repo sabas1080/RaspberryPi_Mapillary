@@ -201,6 +201,9 @@ def wait():
 		mlon = int(60 * (alon - dlon))
 		slon = int(6000 * (60 * (alon - dlon) - mlon))
 		camera.exif_tags['GPS.GPSLongitude'] = '%d/1,%d/1,%d/100' % (dlon, mlon, slon)
+        
+        camera.capture(filename, use_video_port=False, format='jpeg',
+        thumbnail=None)
  
 			# Provide next image file name.
 			#yield '/media/data/pictures/' + now.strftime('%s') + '.jpg'
@@ -555,9 +558,7 @@ def takePicture():
 	# Connect to gpsd.
 	  print "Inicia GPS"
 	  gpsd = gps.gps(mode=gps.WATCH_ENABLE)
-	  
-	  camera.capture(filename, use_video_port=False, format='jpeg',
-	  thumbnail=None, wait())
+	  wait()
 
 	  # Start taking pictures.
 		#cam.capture_sequence(wait(), burst=True
