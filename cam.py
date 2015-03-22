@@ -569,10 +569,11 @@ def takePicture():
 	  global gpsd
 	# Connect to gpsd.
 	  #print "Inicia GPS"
-	  gpsp = GpsPoller() # create the thread
-	  gpsp.start() # start it up
-	  #gpsd = gps.gps(mode=gps.WATCH_ENABLE)
-	  wait()
+	  #gpsp = GpsPoller() # create the thread
+	  #gpsp.start() # start it up
+	  gpsd = gps.gps(mode=gps.WATCH_ENABLE)
+	  t = threading.Thread(target=wait)
+        t.start()
 	  camera.capture(filename, use_video_port=False, format='jpeg',
 	  thumbnail=None)
 
