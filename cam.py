@@ -53,8 +53,7 @@ from dateutil import parser
 import gps
 import math
 
-#gpsd = None #seting the global variable
-
+gpsd = None #seting the global variable
 # UI classes ---------------------------------------------------------------
 
 # Small resistive touchscreen is best suited to simple tap interactions.
