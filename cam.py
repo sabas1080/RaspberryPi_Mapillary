@@ -54,6 +54,7 @@ import gps
 import math
 
 gpsd = None #seting the global variable
+report = None #seting the global variable
 # UI classes ---------------------------------------------------------------
 
 # Small resistive touchscreen is best suited to simple tap interactions.
