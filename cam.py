@@ -174,25 +174,25 @@ def wait():
  
 			# Set picture date and time to GPS values.
 			now = parser.parse(report.get('time', datetime.now().isoformat()))
-			print now.strftime('%s')
+			#print now.strftime('%s')
 			camera.exif_tags['EXIF.DateTimeOriginal'] = now.strftime('%Y:%m:%d %H:%M:%S')
  
 			# Set altitude to GPS value.
 			alt = report.get('alt', 0.0)
-			print alt
+			#print alt
 			camera.exif_tags['GPS.GPSAltitudeRef'] = '0' if alt > 0 else '1'
 			aalt = math.fabs(alt)
 			camera.exif_tags['GPS.GPSAltitude'] = '%d/100' % int(100 * aalt)
  
 			# Convert speed from m/s to km/h and set tag.
 			speed = report.get('speed', 0.0)
-			print speed
+			#print speed
 			camera.exif_tags['GPS.GPSSpeedRef'] = 'K'
 			camera.exif_tags['GPS.GPSSpeed'] = '%d/1000' % int(3600 * speed)
  
 			# Set direction of motion and direction along which the picture is taken (assuming frontal view).
 			track = report.get('track', 0.0)
-			print track
+			#print track
 			camera.exif_tags['GPS.GPSTrackRef'] = 'T'
 			camera.exif_tags['GPS.GPSTrack'] = '%d/10' % int(10 * track)
 			camera.exif_tags['GPS.GPSImgDirectionRef'] = 'T'
@@ -200,7 +200,7 @@ def wait():
  
 			# Set GPS latitude.
 			lat = report.get('lat', 0.0)
-			print lat
+			#print lat
 			camera.exif_tags['GPS.GPSLatitudeRef'] = 'N' if lat > 0 else 'S'
 			alat = math.fabs(lat)
 			dlat = int(alat)
@@ -210,19 +210,17 @@ def wait():
  
 			# Set GPS longitude.
 			lon = report.get('lon', 0.0)
-			print lon
+			#print lon
 			camera.exif_tags['GPS.GPSLongitudeRef'] = 'E' if lon > 0 else 'W'
 			alon = math.fabs(lon)
 			dlon = int(alon)
 			mlon = int(60 * (alon - dlon))
 			slon = int(6000 * (60 * (alon - dlon) - mlon))
 			camera.exif_tags['GPS.GPSLongitude'] = '%d/1,%d/1,%d/100' % (dlon, mlon, slon)
- 
-			# Provide next image file name.
-			#yield '/media/data/pictures/' + now.strftime('%s') + '.jpg'
+
 			#Profile
-			#camera.exif_tags['IFD0.Artist'] = 'Sabas'
-			#camera.exif_tags['IFD0.Copyright'] = 'Copyleft (c) 2015 Sabas!'
+			camera.exif_tags['IFD0.Artist'] = 'Sabas'
+			camera.exif_tags['IFD0.Copyright'] = 'Copyleft (c) 2015 Sabas!'
 
 def isoCallback(n): # Pass 1 (next ISO) or -1 (prev ISO)
 	global isoMode
