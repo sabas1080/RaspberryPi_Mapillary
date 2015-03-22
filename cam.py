@@ -146,19 +146,19 @@ class Button:
 # UI callbacks -------------------------------------------------------------
 # These are defined before globals because they're referenced by items in
 # the global buttons[] list.
-#class GpsPoller(threading.Thread):
-#  def __init__(self):
-#	threading.Thread.__init__(self)
-#	global gpsd #bring it in scope
-#	#gpsd = gps(mode=WATCH_ENABLE) #starting the stream of info
-#	gpsd = gps.gps(mode=gps.WATCH_ENABLE)
-#	self.current_value = None
-#	self.running = True #setting the thread running to true
+class GpsPoller(threading.Thread):
+  def __init__(self):
+	threading.Thread.__init__(self)
+	global gpsd #bring it in scope
+	#gpsd = gps(mode=WATCH_ENABLE) #starting the stream of info
+	gpsd = gps.gps(mode=gps.WATCH_ENABLE)
+	self.current_value = None
+	self.running = True #setting the thread running to true
  
-#  def run(self):
-#	global gpsd, report
-#	while gpsp.running:
-#	  report = gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
+  def run(self):
+	global gpsd, report
+	while gpsp.running:
+	  report = gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
 
 
 def wait():
@@ -561,10 +561,10 @@ def takePicture():
 
 	threading.Thread.__init__(self)
     t = threading.Thread(target=spinner)
-	threads.append(t)
+	#threads.append(t)
 	gpsd = gps.gps(mode=gps.WATCH_ENABLE)
-	t = threading.Thread(target=wait)
-	threads.append(t)
+	#t = threading.Thread(target=wait)
+	#threads.append(t)
 	t.start()
 
 	scaled = None
@@ -574,8 +574,8 @@ def takePicture():
 	  #global gpsd
 	# Connect to gpsd.
 	  #print "Inicia GPS"
-	  #gpsp = GpsPoller() # create the thread
-	  #gpsp.start() # start it up
+	  gpsp = GpsPoller() # create the thread
+	  gpsp.start() # start it up
 	  #gpsd = gps.gps(mode=gps.WATCH_ENABLE)
 	  #t = threading.Thread(target=wait)
 	  #j.start()
