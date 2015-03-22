@@ -551,7 +551,7 @@ def takePicture():
 	camera.resolution = sizeData[sizeMode][0]
 	camera.crop       = sizeData[sizeMode][2]
 	try:
-	global gpsd
+	  global gpsd
     # Connect to gpsd.
 	  gpsd = gps.gps(mode=gps.WATCH_ENABLE)
 	  wait()
