@@ -146,7 +146,7 @@ class Button:
 # UI callbacks -------------------------------------------------------------
 # These are defined before globals because they're referenced by items in
 # the global buttons[] list.
-def wait(file):
+def wait():
 	global camera
 	while True:
 	    report = gpsd.next()
