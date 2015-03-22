@@ -560,7 +560,11 @@ def takePicture():
 	  if saveIdx > 9999: saveIdx = 0
 
 	t = threading.Thread(target=spinner)
-	t.start()
+    threads.append(t)
+    gpsd = gps.gps(mode=gps.WATCH_ENABLE)
+    t = threading.Thread(target=wait)
+	threads.append(t)
+    t.start()
 
 	scaled = None
 	camera.resolution = sizeData[sizeMode][0]
@@ -571,9 +575,9 @@ def takePicture():
 	  #print "Inicia GPS"
 	  #gpsp = GpsPoller() # create the thread
 	  #gpsp.start() # start it up
-	  gpsd = gps.gps(mode=gps.WATCH_ENABLE)
-	  j = threading.Thread(target=wait)
-	  j.start()
+	  #gpsd = gps.gps(mode=gps.WATCH_ENABLE)
+	  #t = threading.Thread(target=wait)
+	  #j.start()
 	  camera.capture(filename, use_video_port=False, format='jpeg',
 	  thumbnail=None)
 
