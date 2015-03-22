@@ -161,8 +161,8 @@ class GpsPoller(threading.Thread):
 
 def wait():
 	global camera
-	while True:
-	report = gpsd.next()
+	#while True:
+	#report = gpsd.next()
 	#print report
 	# Wait for position information.
 	if report['class'] == 'TPV':
