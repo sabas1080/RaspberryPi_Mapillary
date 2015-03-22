@@ -152,7 +152,7 @@ def wait():
 	global camera
 	while True:
 		report = gpsd.next()
-		print report
+		#print report
 		# Wait for position information.
 		if report['class'] == 'TPV':
 			# Set orientation to normal landscape.
