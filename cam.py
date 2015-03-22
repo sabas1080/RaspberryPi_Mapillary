@@ -553,7 +553,7 @@ def takePicture():
 	try:
 	  global gpsd
     # Connect to gpsd.
-	  print "Inicia GPS"
+	  #print "Inicia GPS"
       gpsd = gps.gps(mode=gps.WATCH_ENABLE)
 	  wait()
 	  camera.capture(filename, use_video_port=False, format='jpeg',
