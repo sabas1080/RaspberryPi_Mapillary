@@ -32,6 +32,7 @@
 #
 # Written by Phil Burgess / Paint Your Dragon for Adafruit Industries.
 # BSD license, all text above must be included in any redistribution.
+#Andres Sabas The Inventor's House Hackerspace
 
 import atexit
 import cPickle as pickle
