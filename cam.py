@@ -53,7 +53,7 @@ from dateutil import parser
 import gps
 import math
 
-gpsd = None #seting the global variable
+#gpsd = None #seting the global variable
 
 # UI classes ---------------------------------------------------------------
 
@@ -551,7 +551,8 @@ def takePicture():
 	camera.resolution = sizeData[sizeMode][0]
 	camera.crop       = sizeData[sizeMode][2]
 	try:
-	# Connect to gpsd.
+	global gpsd
+    # Connect to gpsd.
 	  gpsd = gps.gps(mode=gps.WATCH_ENABLE)
 	  wait()
 	  camera.capture(filename, use_video_port=False, format='jpeg',
