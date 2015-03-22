@@ -155,9 +155,9 @@ class GpsPoller(threading.Thread):
 	self.running = True #setting the thread running to true
  
   def run(self):
-	global gpsd
+	global gpsd, report
 	while gpsp.running:
-	  gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
+	  report = gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
 
 
 def wait():
