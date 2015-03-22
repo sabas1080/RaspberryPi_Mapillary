@@ -559,7 +559,6 @@ def takePicture():
 	  saveIdx += 1
 	  if saveIdx > 9999: saveIdx = 0
 
-	threading.Thread.__init__(self)
 	t = threading.Thread(target=spinner)
 	#threads.append(t)
 	gpsd = gps.gps(mode=gps.WATCH_ENABLE)
