@@ -54,7 +54,7 @@ import gps
 import math
 
 gpsd = None #seting the global variable
-report = None #seting the global variable
+
 # UI classes ---------------------------------------------------------------
 
 # Small resistive touchscreen is best suited to simple tap interactions.
@@ -146,26 +146,26 @@ class Button:
 # UI callbacks -------------------------------------------------------------
 # These are defined before globals because they're referenced by items in
 # the global buttons[] list.
-class GpsPoller(threading.Thread):
-  def __init__(self):
-	threading.Thread.__init__(self)
-	global gpsd #bring it in scope
-	#gpsd = gps(mode=WATCH_ENABLE) #starting the stream of info
-	gpsd = gps.gps(mode=gps.WATCH_ENABLE)
-	self.current_value = None
-	self.running = True #setting the thread running to true
+#class GpsPoller(threading.Thread):
+#  def __init__(self):
+#	threading.Thread.__init__(self)
+#	global gpsd #bring it in scope
+#	#gpsd = gps(mode=WATCH_ENABLE) #starting the stream of info
+#	gpsd = gps.gps(mode=gps.WATCH_ENABLE)
+#	self.current_value = None
+#	self.running = True #setting the thread running to true
  
-  def run(self):
-	global gpsd, report
-	while gpsp.running:
-	  report = gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
+#  def run(self):
+#	global gpsd, report
+#	while gpsp.running:
+#	  report = gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
 
 
 def wait():
 	global camera
 	#while True:
-	#report = gpsd.next()
-	#print report
+	report = gpsd.next()
+	print report
 	# Wait for position information.
 	if report['class'] == 'TPV':
 		# Set orientation to normal landscape.
