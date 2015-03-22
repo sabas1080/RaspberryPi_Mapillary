@@ -147,9 +147,9 @@ class Button:
 # These are defined before globals because they're referenced by items in
 # the global buttons[] list.
 def wait(file):
-    file=filename
 	global camera
 	#while True:
+    file=filename
 	report = gpsd.next()
 	#print report
 	# Wait for position information.
