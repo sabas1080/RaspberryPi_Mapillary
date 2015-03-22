@@ -301,6 +301,7 @@ def sizeModeCallback(n): # Radio buttons on size settings screen
 #	camera.crop       = sizeData[sizeMode][2]
 
 
+
 # Global stuff -------------------------------------------------------------
 
 screenMode      =  3      # Current screen mode; default = viewfinder
@@ -559,11 +560,6 @@ def takePicture():
 	  if saveIdx > 9999: saveIdx = 0
 
 	t = threading.Thread(target=spinner)
-	
-	global gpsd
-	gpsd = gps.gps(mode=gps.WATCH_ENABLE)
-	g = threading.Thread(target=wait)
-	g.start()
 	t.start()
 
 	scaled = None
@@ -571,13 +567,6 @@ def takePicture():
 	camera.crop       = sizeData[sizeMode][2]
 	try:
 	  
-	# Connect to gpsd.
-	  #print "Inicia GPS"
-	  #gpsp = GpsPoller() # create the thread
-	  #gpsp.start() # start it up
-	  #gpsd = gps.gps(mode=gps.WATCH_ENABLE)
-	  #t = threading.Thread(target=wait)
-	  #j.start()
 	  camera.capture(filename, use_video_port=False, format='jpeg',
 	  thumbnail=None)
 
@@ -682,6 +671,12 @@ camera.resolution = sizeData[sizeMode][1]
 #camera.crop       = sizeData[sizeMode][2]
 camera.crop       = (0.0, 0.0, 1.0, 1.0)
 # Leave raw format at default YUV, don't touch, don't set to RGB!
+
+# Connect to gpsd.
+global gpsd
+gpsd = gps.gps(mode=gps.WATCH_ENABLE)
+g = threading.Thread(target=wait)
+g.start()
 
 # Load all icons at startup.
 for file in os.listdir(iconPath):
