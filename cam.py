@@ -68,12 +68,12 @@ import math
 
 class Icon:
 
-	def __init__(self, name):
+    def __init__(self, name):
 	  self.name = name
 	  try:
-	    self.bitmap = pygame.image.load(iconPath + '/' + name + '.png')
+		self.bitmap = pygame.image.load(iconPath + '/' + name + '.png')
 	  except:
-	    pass
+		pass
 
 # Button is a simple tappable screen region.  Each has:
 #  - bounding rect ((X,Y,W,H) in pixels)
@@ -103,11 +103,11 @@ class Button:
 	  self.callback = None # Callback function
 	  self.value    = None # Value passed to callback
 	  for key, value in kwargs.iteritems():
-	    if   key == 'color': self.color    = value
-	    elif key == 'bg'   : self.bg       = value
-	    elif key == 'fg'   : self.fg       = value
-	    elif key == 'cb'   : self.callback = value
-	    elif key == 'value': self.value    = value
+		if   key == 'color': self.color    = value
+		elif key == 'bg'   : self.bg       = value
+		elif key == 'fg'   : self.fg       = value
+		elif key == 'cb'   : self.callback = value
+		elif key == 'value': self.value    = value
 
 	def selected(self, pos):
 	  x1 = self.rect[0]
@@ -115,33 +115,33 @@ class Button:
 	  x2 = x1 + self.rect[2] - 1
 	  y2 = y1 + self.rect[3] - 1
 	  if ((pos[0] >= x1) and (pos[0] <= x2) and
-	      (pos[1] >= y1) and (pos[1] <= y2)):
-	    if self.callback:
-	      if self.value is None: self.callback()
-	      else:                  self.callback(self.value)
-	    return True
+		  (pos[1] >= y1) and (pos[1] <= y2)):
+		if self.callback:
+		  if self.value is None: self.callback()
+		  else:                  self.callback(self.value)
+		return True
 	  return False
 
 	def draw(self, screen):
 	  if self.color:
-	    screen.fill(self.color, self.rect)
+		screen.fill(self.color, self.rect)
 	  if self.iconBg:
-	    screen.blit(self.iconBg.bitmap,
-	      (self.rect[0]+(self.rect[2]-self.iconBg.bitmap.get_width())/2,
-	       self.rect[1]+(self.rect[3]-self.iconBg.bitmap.get_height())/2))
+		screen.blit(self.iconBg.bitmap,
+		  (self.rect[0]+(self.rect[2]-self.iconBg.bitmap.get_width())/2,
+		   self.rect[1]+(self.rect[3]-self.iconBg.bitmap.get_height())/2))
 	  if self.iconFg:
-	    screen.blit(self.iconFg.bitmap,
-	      (self.rect[0]+(self.rect[2]-self.iconFg.bitmap.get_width())/2,
-	       self.rect[1]+(self.rect[3]-self.iconFg.bitmap.get_height())/2))
+		screen.blit(self.iconFg.bitmap,
+		  (self.rect[0]+(self.rect[2]-self.iconFg.bitmap.get_width())/2,
+		   self.rect[1]+(self.rect[3]-self.iconFg.bitmap.get_height())/2))
 
 	def setBg(self, name):
 	  if name is None:
-	    self.iconBg = None
+		self.iconBg = None
 	  else:
-	    for i in icons:
-	      if name == i.name:
-	        self.iconBg = i
-	        break
+		for i in icons:
+		  if name == i.name:
+			self.iconBg = i
+			break
 
 # UI callbacks -------------------------------------------------------------
 # These are defined before globals because they're referenced by items in
@@ -206,7 +206,7 @@ def wait():
 			#yield '/media/data/pictures/' + now.strftime('%s') + '.jpg'
 			#Profile
 			#camera.exif_tags['IFD0.Artist'] = 'Sabas'
-    		#camera.exif_tags['IFD0.Copyright'] = 'Copyleft (c) 2015 Sabas!'
+			#camera.exif_tags['IFD0.Copyright'] = 'Copyleft (c) 2015 Sabas!'
 
 def isoCallback(n): # Pass 1 (next ISO) or -1 (prev ISO)
 	global isoMode
@@ -233,13 +233,13 @@ def viewCallback(n): # Viewfinder buttons
 	  screenMode = settingMode # Switch to last settings mode
 	elif n is 1: # Play icon (image playback)
 	  if scaled: # Last photo is already memory-resident
-	    loadIdx         = saveIdx
-	    screenMode      =  0 # Image playback
-	    screenModePrior = -1 # Force screen refresh
+		loadIdx         = saveIdx
+		screenMode      =  0 # Image playback
+		screenModePrior = -1 # Force screen refresh
 	  else:      # Load image
-	    r = imgRange(pathData[storeMode])
-	    if r: showImage(r[1]) # Show last image in directory
-	    else: screenMode = 2  # No images
+		r = imgRange(pathData[storeMode])
+		if r: showImage(r[1]) # Show last image in directory
+		else: screenMode = 2  # No images
 	else: # Rest of screen = shutter
 	  takePicture()
 
@@ -264,13 +264,13 @@ def deleteCallback(n): # Delete confirmation
 	if n is True:
 	  os.remove(pathData[storeMode] + '/IMG_' + '%04d' % loadIdx + '.JPG')
 	  if(imgRange(pathData[storeMode])):
-	    screen.fill(0)
-	    pygame.display.update()
-	    showNextImage(-1)
+		screen.fill(0)
+		pygame.display.update()
+		showNextImage(-1)
 	  else: # Last image deleteted; go to 'no images' mode
-	    screenMode = 2
-	    scaled     = None
-	    loadIdx    = -1
+		screenMode = 2
+		scaled     = None
+		loadIdx    = -1
 
 def storeModeCallback(n): # Radio buttons on storage settings screen
 	global storeMode
@@ -359,9 +359,9 @@ buttons = [
   # Screen mode 1 is delete confirmation
   [Button((  0,35,320, 33), bg='delete'),
    Button(( 32,86,120,100), bg='yn', fg='yes',
-    cb=deleteCallback, value=True),
+	cb=deleteCallback, value=True),
    Button((168,86,120,100), bg='yn', fg='no',
-    cb=deleteCallback, value=False)],
+	cb=deleteCallback, value=False)],
 
   # Screen mode 2 is 'No Images'
   [Button((0,  0,320,240), cb=doneCallback), # Full screen = button
@@ -382,11 +382,11 @@ buttons = [
    Button((  0,  0, 80, 52), bg='prev', cb=settingCallback, value=-1),
    Button((240,  0, 80, 52), bg='next', cb=settingCallback, value= 1),
    Button((  2, 60,100,120), bg='radio3-1', fg='store-folder',
-    cb=storeModeCallback, value=0),
+	cb=storeModeCallback, value=0),
    Button((110, 60,100,120), bg='radio3-0', fg='store-boot',
-    cb=storeModeCallback, value=1),
+	cb=storeModeCallback, value=1),
    Button((218, 60,100,120), bg='radio3-0', fg='store-dropbox',
-    cb=storeModeCallback, value=2),
+	cb=storeModeCallback, value=2),
    Button((  0, 10,320, 35), bg='storage')],
 
   # Screen mode 5 is size settings
@@ -394,11 +394,11 @@ buttons = [
    Button((  0,  0, 80, 52), bg='prev', cb=settingCallback, value=-1),
    Button((240,  0, 80, 52), bg='next', cb=settingCallback, value= 1),
    Button((  2, 60,100,120), bg='radio3-1', fg='size-l',
-    cb=sizeModeCallback, value=0),
+	cb=sizeModeCallback, value=0),
    Button((110, 60,100,120), bg='radio3-0', fg='size-m',
-    cb=sizeModeCallback, value=1),
+	cb=sizeModeCallback, value=1),
    Button((218, 60,100,120), bg='radio3-0', fg='size-s',
-    cb=sizeModeCallback, value=2),
+	cb=sizeModeCallback, value=2),
    Button((  0, 10,320, 29), bg='size')],
 
   # Screen mode 6 is graphic effect
@@ -452,9 +452,9 @@ def saveSettings():
 	  # Use a dictionary (rather than pickling 'raw' values) so
 	  # the number & order of things can change without breaking.
 	  d = { 'fx'    : fxMode,
-	        'iso'   : isoMode,
-	        'size'  : sizeMode,
-	        'store' : storeMode }
+			'iso'   : isoMode,
+			'size'  : sizeMode,
+			'store' : storeMode }
 	  pickle.dump(d, outfile)
 	  outfile.close()
 	except:
@@ -480,10 +480,10 @@ def imgRange(path):
 	max = 0
 	try:
 	  for file in os.listdir(path):
-	    if fnmatch.fnmatch(file, 'IMG_[0-9][0-9][0-9][0-9].JPG'):
-	      i = int(file[4:8])
-	      if(i < min): min = i
-	      if(i > max): max = i
+		if fnmatch.fnmatch(file, 'IMG_[0-9][0-9][0-9][0-9].JPG'):
+		  i = int(file[4:8])
+		  if(i < min): min = i
+		  if(i > max): max = i
 	finally:
 	  return None if min > max else (min, max)
 
@@ -514,27 +514,27 @@ def takePicture():
 
 	if not os.path.isdir(pathData[storeMode]):
 	  try:
-	    os.makedirs(pathData[storeMode])
-	    # Set new directory ownership to pi user, mode to 755
-	    os.chown(pathData[storeMode], uid, gid)
-	    os.chmod(pathData[storeMode],
-	      stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR |
-	      stat.S_IRGRP | stat.S_IXGRP |
-	      stat.S_IROTH | stat.S_IXOTH)
+		os.makedirs(pathData[storeMode])
+		# Set new directory ownership to pi user, mode to 755
+		os.chown(pathData[storeMode], uid, gid)
+		os.chmod(pathData[storeMode],
+		  stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR |
+		  stat.S_IRGRP | stat.S_IXGRP |
+		  stat.S_IROTH | stat.S_IXOTH)
 	  except OSError as e:
-	    # errno = 2 if can't create folder
-	    print errno.errorcode[e.errno]
-	    return
+		# errno = 2 if can't create folder
+		print errno.errorcode[e.errno]
+		return
 
 	# If this is the first time accessing this directory,
 	# scan for the max image index, start at next pos.
 	if storeMode != storeModePrior:
 	  r = imgRange(pathData[storeMode])
 	  if r is None:
-	    saveIdx = 1
+		saveIdx = 1
 	  else:
-	    saveIdx = r[1] + 1
-	    if saveIdx > 9999: saveIdx = 0
+		saveIdx = r[1] + 1
+		if saveIdx > 9999: saveIdx = 0
 	  storeModePrior = storeMode
 
 	# Scan for next available image slot
@@ -552,9 +552,9 @@ def takePicture():
 	camera.crop       = sizeData[sizeMode][2]
 	try:
 	  global gpsd
-    # Connect to gpsd.
+	# Connect to gpsd.
 	  #print "Inicia GPS"
-      gpsd = gps.gps(mode=gps.WATCH_ENABLE)
+	  gpsd = gps.gps(mode=gps.WATCH_ENABLE)
 	  wait()
 	  camera.capture(filename, use_video_port=False, format='jpeg',
 	  thumbnail=None)
@@ -565,15 +565,15 @@ def takePicture():
 	  # Set image file ownership to pi user, mode to 644
 	  # os.chown(filename, uid, gid) # Not working, why?
 	  os.chmod(filename,
-	    stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
+		stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
 	  img    = pygame.image.load(filename)
 	  scaled = pygame.transform.scale(img, sizeData[sizeMode][1])
 	  if storeMode == 2: # Dropbox
-	    if upconfig:
-	      cmd = uploader + ' -f ' + upconfig + ' upload ' + filename + ' Photos/' + os.path.basename(filename)
-	    else:
-	      cmd = uploader + ' upload ' + filename + ' Photos/' + os.path.basename(filename)
-	    call ([cmd], shell=True)
+		if upconfig:
+		  cmd = uploader + ' -f ' + upconfig + ' upload ' + filename + ' Photos/' + os.path.basename(filename)
+		else:
+		  cmd = uploader + ' upload ' + filename + ' Photos/' + os.path.basename(filename)
+		call ([cmd], shell=True)
 
 	finally:
 	  # Add error handling/indicator (disk full, etc.)
@@ -585,10 +585,10 @@ def takePicture():
 
 	if scaled:
 	  if scaled.get_height() < 240: # Letterbox
-	    screen.fill(0)
+		screen.fill(0)
 	  screen.blit(scaled,
-	    ((320 - scaled.get_width() ) / 2,
-	     (240 - scaled.get_height()) / 2))
+		((320 - scaled.get_width() ) / 2,
+		 (240 - scaled.get_height()) / 2))
 	  pygame.display.update()
 	  time.sleep(2.5)
 	  loadIdx = saveIdx
@@ -605,8 +605,8 @@ def showNextImage(direction):
 	  if(n > 9999): n = 0
 	  elif(n < 0):  n = 9999
 	  if os.path.exists(pathData[storeMode]+'/IMG_'+'%04d'%n+'.JPG'):
-	    showImage(n)
-	    break
+		showImage(n)
+		break
 
 	busy = False
 	t.join()
@@ -618,7 +618,7 @@ def showImage(n):
 	t.start()
 
 	img      = pygame.image.load(
-	            pathData[storeMode] + '/IMG_' + '%04d' % n + '.JPG')
+				pathData[storeMode] + '/IMG_' + '%04d' % n + '.JPG')
 	scaled   = pygame.transform.scale(img, sizeData[sizeMode][1])
 	loadIdx  = n
 
@@ -664,18 +664,18 @@ camera.crop       = (0.0, 0.0, 1.0, 1.0)
 # Load all icons at startup.
 for file in os.listdir(iconPath):
   if fnmatch.fnmatch(file, '*.png'):
-    icons.append(Icon(file.split('.')[0]))
+	icons.append(Icon(file.split('.')[0]))
 
 # Assign Icons to Buttons, now that they're loaded
 for s in buttons:        # For each screenful of buttons...
   for b in s:            #  For each button on screen...
-    for i in icons:      #   For each icon...
-      if b.bg == i.name: #    Compare names; match?
-        b.iconBg = i     #     Assign Icon to Button
-        b.bg     = None  #     Name no longer used; allow garbage collection
-      if b.fg == i.name:
-        b.iconFg = i
-        b.fg     = None
+	for i in icons:      #   For each icon...
+	  if b.bg == i.name: #    Compare names; match?
+		b.iconBg = i     #     Assign Icon to Button
+		b.bg     = None  #     Name no longer used; allow garbage collection
+	  if b.fg == i.name:
+		b.iconFg = i
+		b.fg     = None
 
 loadSettings() # Must come last; fiddles with Button/Icon states
 
@@ -686,44 +686,44 @@ while(True):
 
   # Process touchscreen input
   while True:
-    for event in pygame.event.get():
-      if(event.type is MOUSEBUTTONDOWN):
-        pos = pygame.mouse.get_pos()
-        for b in buttons[screenMode]:
-          if b.selected(pos): break
-    # If in viewfinder or settings modes, stop processing touchscreen
-    # and refresh the display to show the live preview.  In other modes
-    # (image playback, etc.), stop and refresh the screen only when
-    # screenMode changes.
-    if screenMode >= 3 or screenMode != screenModePrior: break
+	for event in pygame.event.get():
+	  if(event.type is MOUSEBUTTONDOWN):
+		pos = pygame.mouse.get_pos()
+		for b in buttons[screenMode]:
+		  if b.selected(pos): break
+	# If in viewfinder or settings modes, stop processing touchscreen
+	# and refresh the display to show the live preview.  In other modes
+	# (image playback, etc.), stop and refresh the screen only when
+	# screenMode changes.
+	if screenMode >= 3 or screenMode != screenModePrior: break
 
   # Refresh display
   if screenMode >= 3: # Viewfinder or settings modes
-    stream = io.BytesIO() # Capture into in-memory stream
-    camera.capture(stream, use_video_port=True, format='raw')
-    stream.seek(0)
-    stream.readinto(yuv)  # stream -> YUV buffer
-    stream.close()
-    yuv2rgb.convert(yuv, rgb, sizeData[sizeMode][1][0],
-      sizeData[sizeMode][1][1])
-    img = pygame.image.frombuffer(rgb[0:
-      (sizeData[sizeMode][1][0] * sizeData[sizeMode][1][1] * 3)],
-      sizeData[sizeMode][1], 'RGB')
+	stream = io.BytesIO() # Capture into in-memory stream
+	camera.capture(stream, use_video_port=True, format='raw')
+	stream.seek(0)
+	stream.readinto(yuv)  # stream -> YUV buffer
+	stream.close()
+	yuv2rgb.convert(yuv, rgb, sizeData[sizeMode][1][0],
+	  sizeData[sizeMode][1][1])
+	img = pygame.image.frombuffer(rgb[0:
+	  (sizeData[sizeMode][1][0] * sizeData[sizeMode][1][1] * 3)],
+	  sizeData[sizeMode][1], 'RGB')
   elif screenMode < 2: # Playback mode or delete confirmation
-    img = scaled       # Show last-loaded image
+	img = scaled       # Show last-loaded image
   else:                # 'No Photos' mode
-    img = None         # You get nothing, good day sir
+	img = None         # You get nothing, good day sir
 
   if img is None or img.get_height() < 240: # Letterbox, clear background
-    screen.fill(0)
+	screen.fill(0)
   if img:
-    screen.blit(img,
-      ((320 - img.get_width() ) / 2,
-       (240 - img.get_height()) / 2))
+	screen.blit(img,
+	  ((320 - img.get_width() ) / 2,
+	   (240 - img.get_height()) / 2))
 
   # Overlay buttons on display and update
   for i,b in enumerate(buttons[screenMode]):
-    b.draw(screen)
+	b.draw(screen)
   pygame.display.update()
 
   screenModePrior = screenMode
