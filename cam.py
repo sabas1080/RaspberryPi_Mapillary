@@ -151,13 +151,13 @@ class GpsPoller(threading.Thread):
 	threading.Thread.__init__(self)
 	global gpsd #bring it in scope
 	#gpsd = gps(mode=WATCH_ENABLE) #starting the stream of info
-	gpsd = gps.gps(mode=gps.WATCH_ENABLE)
+	#gpsd = gps.gps(mode=gps.WATCH_ENABLE)
 	self.current_value = None
 	self.running = True #setting the thread running to true
  
   def run(self):
 	global gpsd, report
-	#gpsd = gps.gps(mode=gps.WATCH_ENABLE)
+	gpsd = gps.gps(mode=gps.WATCH_ENABLE)
 	while gpsd.running:
 	  report = gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
 
