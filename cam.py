@@ -53,7 +53,8 @@ from dateutil import parser
 import gps
 import math
 
-gpsd = None #seting the global variable
+global gpsd
+#gpsd = None #seting the global variable
 
 # UI classes ---------------------------------------------------------------
 
