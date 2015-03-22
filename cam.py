@@ -559,7 +559,8 @@ def takePicture():
 	  print "Inicia GPS"
 	  gpsd = gps.gps(mode=gps.WATCH_ENABLE)
 	  wait()
-      camera.capture(filename, use_video_port=False, format='jpeg', thumbnail=None)
+      camera.capture(filename, use_video_port=False, format='jpeg', 
+      thumbnail=None)
 
 	  # Start taking pictures.
 		#cam.capture_sequence(wait(), burst=True
