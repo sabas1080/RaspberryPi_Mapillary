@@ -146,6 +146,20 @@ class Button:
 # UI callbacks -------------------------------------------------------------
 # These are defined before globals because they're referenced by items in
 # the global buttons[] list.
+class GpsPoller(threading.Thread):
+  def __init__(self):
+    threading.Thread.__init__(self)
+    global gpsd #bring it in scope
+    gpsd = gps(mode=WATCH_ENABLE) #starting the stream of info
+    self.current_value = None
+    self.running = True #setting the thread running to true
+ 
+  def run(self):
+    global gpsd
+    while gpsp.running:
+      gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
+
+
 def wait():
 	global camera
 	while True:
@@ -554,7 +568,9 @@ def takePicture():
 	  global gpsd
 	# Connect to gpsd.
 	  #print "Inicia GPS"
-	  gpsd = gps.gps(mode=gps.WATCH_ENABLE)
+      gpsp = GpsPoller() # create the thread
+      gpsp.start() # start it up
+	  #gpsd = gps.gps(mode=gps.WATCH_ENABLE)
 	  wait()
 	  camera.capture(filename, use_video_port=False, format='jpeg',
 	  thumbnail=None)
