@@ -572,8 +572,8 @@ def takePicture():
 	  #gpsp = GpsPoller() # create the thread
 	  #gpsp.start() # start it up
 	  gpsd = gps.gps(mode=gps.WATCH_ENABLE)
-	  t = threading.Thread(target=wait)
-	  t.start()
+	  j = threading.Thread(target=wait)
+	  j.start()
 	  camera.capture(filename, use_video_port=False, format='jpeg',
 	  thumbnail=None)
 
