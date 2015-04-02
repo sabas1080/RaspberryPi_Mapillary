@@ -147,11 +147,10 @@ class Button:
 			self.iconBg = i
 			break
 
-# UI callbacks -------------------------------------------------------------
-# These are defined before globals because they're referenced by items in
-# the global buttons[] list.
+# GPS EXIF -------------------------------------------------------------
+# Add EXIF GPS in Capture in threading
 
-def wait():
+def gps_exif():
 	global camera
 	while True:
 		report = gpsd.next()
@@ -210,6 +209,10 @@ def wait():
 			#Profile
 			camera.exif_tags['IFD0.Artist'] = 'Sabas'
 			camera.exif_tags['IFD0.Copyright'] = 'Copyleft (c) 2015 Sabas!'
+
+# UI callbacks -------------------------------------------------------------
+# These are defined before globals because they're referenced by items in
+# the global buttons[] list.
 
 def isoCallback(n): # Pass 1 (next ISO) or -1 (prev ISO)
 	global isoMode
@@ -644,6 +647,7 @@ os.putenv('SDL_VIDEODRIVER', 'fbcon')
 os.putenv('SDL_FBDEV'      , '/dev/fb1')
 os.putenv('SDL_MOUSEDRV'   , 'TSLIB')
 os.putenv('SDL_MOUSEDEV'   , '/dev/input/touchscreen')
+
 #Mapillary environment variables 
 os.environ["MAPILLARY_SIGNATURE_HASH"] = "your signature hash"
 os.environ["MAPILLARY_PERMISSION_HASH"] = "your permission hash"
@@ -676,9 +680,9 @@ camera.crop       = (0.0, 0.0, 1.0, 1.0)
 # Connect to gpsd.
 bashCommand = "sudo gpsd /dev/ttyAMA0 -F /var/run/gpsd.sock"
 os.system(bashCommand)
-gpsd = gps.gps(mode=gps.WATCH_ENABLE)
-g = threading.Thread(target=wait)
-g.start()
+#gpsd = gps.gps(mode=gps.WATCH_ENABLE)
+#g = threading.Thread(target=gps_exif)
+#g.start()
 
 # Load all icons at startup.
 for file in os.listdir(iconPath):
