@@ -61,7 +61,6 @@ import gps
 import math
 
 global gpsd
-#gpsd = None #seting the global variable
 
 # UI classes ---------------------------------------------------------------
 
@@ -407,6 +406,8 @@ buttons = [
 	cb=storeModeCallback, value=2),
    Button((  0, 10,320, 35), bg='storage')],
 
+#store-dropbox
+
   # Screen mode 5 is size settings
   [Button((  0,188,320, 52), bg='done', cb=doneCallback),
    Button((  0,  0, 80, 52), bg='prev', cb=settingCallback, value=-1),
@@ -439,7 +440,14 @@ buttons = [
    Button(( 17,157, 21, 19), bg='iso-arrow'),
    Button((  0, 10,320, 29), bg='iso')],
 
-  # Screen mode 8 is quit confirmation
+  # Screen mode 8 is Mapillary
+  [Button((  0,188,320, 52), bg='done'   , cb=doneCallback),
+   Button((  0,  0, 80, 52), bg='prev'   , cb=settingCallback, value=-1),
+   Button((240,  0, 80, 52), bg='next'   , cb=settingCallback, value= 1),
+   Button((110, 60,100,120), bg='mapillary', cb=quitCallback),
+   Button((  0, 10,320, 35), bg='quit')],
+
+# Screen mode 9 is quit confirmation
   [Button((  0,188,320, 52), bg='done'   , cb=doneCallback),
    Button((  0,  0, 80, 52), bg='prev'   , cb=settingCallback, value=-1),
    Button((240,  0, 80, 52), bg='next'   , cb=settingCallback, value= 1),
