@@ -441,11 +441,18 @@ buttons = [
    Button((  0, 10,320, 29), bg='iso')],
 
   # Screen mode 8 is Mapillary
-  [Button((  0,188,320, 52), bg='done'   , cb=doneCallback),
-   Button((  0,  0, 80, 52), bg='prev'   , cb=settingCallback, value=-1),
-   Button((240,  0, 80, 52), bg='next'   , cb=settingCallback, value= 1),
-   Button((110, 60,100,120), bg='mapillary', cb=quitCallback),
-   Button((  0, 10,320, 35), bg='quit')],
+
+[Button((  0,188,320, 52), bg='done', cb=doneCallback),
+   Button((  0,  0, 80, 52), bg='prev', cb=settingCallback, value=-1),
+   Button((240,  0, 80, 52), bg='next', cb=settingCallback, value= 1),
+   Button((  2, 60,100,120), bg='green', fg='gps-logo',
+    cb=storeModeCallback, value=0),
+   Button((110, 60,100,120), fg='camera-mapillary',
+	cb=storeModeCallback, value=1),
+   Button((218, 60,100,120), bg='mapillary',
+	cb=storeModeCallback, value=2),
+   Button((  0, 10,320, 35), bg='mapillary-logo')],
+
 
 # Screen mode 9 is quit confirmation
   [Button((  0,188,320, 52), bg='done'   , cb=doneCallback),
