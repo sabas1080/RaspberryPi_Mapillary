@@ -33,8 +33,12 @@
 #pip install exifread
 #
 # Written by Phil Burgess / Paint Your Dragon for Adafruit Industries.
-# BSD license, all text above must be included in any redistribution.
+
+#Mapillary and GPS features
 #Andres Sabas The Inventor's House Hackerspace
+#s@theinventorhouse.org
+
+# BSD license, all text above must be included in any redistribution.
 
 import atexit
 import cPickle as pickle
@@ -314,16 +318,15 @@ scaled          = None    # pygame Surface w/last-loaded image
 # user, set upconfig to the .dropbox_uploader config file in that account's
 # home directory.  Alternately, could run the setup script as root and
 # delete the upconfig line below.
+
 uploader        = '/home/pi/Dropbox-Uploader/dropbox_uploader.sh'
 upconfig        = '/home/pi/.dropbox_uploader'
 
-# To use Mapillary upload and split, must have previously run the autethenticacion
-# script to set up the app key and such.  If this was done as the normal pi
-# user, set upconfig to the .dropbox_uploader config file in that account's
-# home directory.  Alternately, could run the setup script as root and
-# delete the upconfig line below.
+# To use Mapillary upload and split, must have previously modify Mapillary 
+#environment variables 
 
-upload_aut      = '/home/pi/mapillary-uploader/upload_with_authentication.py'
+upload      = '/home/pi/mapillary_tools/python/upload_with_authentication.py'
+split      = '/home/pi/mapillary_tools/python/time_split.py'
 
 sizeData = [ # Camera parameters for different size settings
  # Full res      Viewfinder  Crop window
