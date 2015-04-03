@@ -26,6 +26,7 @@
 #
 #sudo gpsd /dev/ttyUSB0 -F /var/run/gpsd.sock
 #
+#(Optional Debug)
 #sudo cat /dev/ttyAMA0
 #
 #http://fpaez.com/tracker-gps-con-raspberry-pi/
