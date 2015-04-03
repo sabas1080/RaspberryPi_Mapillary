@@ -61,7 +61,7 @@ import gps
 import math
 
 valuegps=0
-
+gpsMode=0
 # UI classes ---------------------------------------------------------------
 
 # Small resistive touchscreen is best suited to simple tap interactions.
@@ -156,8 +156,8 @@ class Button:
 # GPS Connection-------------------------------------------------------------
 # Connect to gpsd.
 
-def gpsCallback(n): # Pass 1 (Desactive GPS), -1 (No GPS) or 0 (Activate GPS)
-	global gpsd
+def gpsCallback(n): # Pass 1 (Desactive GPS) or 0 (Activate GPS)
+	global gpsd, gpsMode
 	if n is 0:
 		bashCommand = "sudo gpsd /dev/ttyAMA0 -F /var/run/gpsd.sock"
 		os.system(bashCommand)
@@ -165,14 +165,19 @@ def gpsCallback(n): # Pass 1 (Desactive GPS), -1 (No GPS) or 0 (Activate GPS)
 			gpsd = gps.gps(mode=gps.WATCH_ENABLE)
 			g = threading.Thread(target=gps_exif)
 			g.start()
-			valuegps=1
+			buttons[8][gpsMode + 3].setBg('green')
+			#valuegps=1
 			
-		except:
-			print("No cargado GPS") 
+		except: #(No GPS)
+			print("No cargado GPS")
+			buttons[8][gpsMode + 3].setBg('yellow')
+			#valuegps=0
 			
 	else:
 	  g.join()
 	  valuegps=0
+	  buttons[8][gpsMode + 3].setBg('red')
+	  #valuegps=0
 	  
 
 # Add EXIF GPS in Capture in threading
@@ -469,7 +474,7 @@ buttons = [
 [Button((  0,188,320, 52), bg='done', cb=doneCallback),
    Button((  0,  0, 80, 52), bg='prev', cb=settingCallback, value=-1),
    Button((240,  0, 80, 52), bg='next', cb=settingCallback, value= 1),
-   Button((  2, 60,100,120), bg='green', fg='gps-logo',
+   Button((  2, 60,100,120), bg='red', fg='gps-logo',
 	cb=gpsCallback, value=valuegps),
    Button((110, 60,100,120), fg='camera-mapillary',
 	cb=storeModeCallback, value=1),
