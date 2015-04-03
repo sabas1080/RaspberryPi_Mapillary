@@ -60,7 +60,7 @@ from dateutil import parser
 import gps
 import math
 
-global gpsd
+valuegps=0
 
 # UI classes ---------------------------------------------------------------
 
@@ -150,7 +150,31 @@ class Button:
 			self.iconBg = i
 			break
 
-# GPS EXIF -------------------------------------------------------------
+
+
+
+# GPS Connection-------------------------------------------------------------
+# Connect to gpsd.
+
+def gpsCallback(n): # Pass 1 (Desactive GPS), -1 (No GPS) or 0 (Activate GPS)
+	global gpsd
+	if n is 0:
+		bashCommand = "sudo gpsd /dev/ttyAMA0 -F /var/run/gpsd.sock"
+		os.system(bashCommand)
+		try:
+			gpsd = gps.gps(mode=gps.WATCH_ENABLE)
+			g = threading.Thread(target=gps_exif)
+			g.start()
+			valuegps=1
+			
+		except:
+			print("No cargado GPS") 
+			
+	else:
+	  g.join()
+	  valuegps=0
+	  
+
 # Add EXIF GPS in Capture in threading
 
 def gps_exif():
@@ -446,7 +470,7 @@ buttons = [
    Button((  0,  0, 80, 52), bg='prev', cb=settingCallback, value=-1),
    Button((240,  0, 80, 52), bg='next', cb=settingCallback, value= 1),
    Button((  2, 60,100,120), bg='green', fg='gps-logo',
-    cb=storeModeCallback, value=0),
+	cb=gpsCallback, value=valuegps),
    Button((110, 60,100,120), fg='camera-mapillary',
 	cb=storeModeCallback, value=1),
    Button((218, 60,100,120), bg='mapillary',
@@ -696,8 +720,8 @@ camera.crop       = (0.0, 0.0, 1.0, 1.0)
 # Leave raw format at default YUV, don't touch, don't set to RGB!
 
 # Connect to gpsd.
-bashCommand = "sudo gpsd /dev/ttyAMA0 -F /var/run/gpsd.sock"
-os.system(bashCommand)
+#bashCommand = "sudo gpsd /dev/ttyAMA0 -F /var/run/gpsd.sock"
+#os.system(bashCommand)
 #gpsd = gps.gps(mode=gps.WATCH_ENABLE)
 #g = threading.Thread(target=gps_exif)
 #g.start()
