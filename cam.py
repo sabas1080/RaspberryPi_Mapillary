@@ -60,8 +60,6 @@ from dateutil import parser
 import gps
 import math
 
-valuegps=0
-gpsMode=0
 # UI classes ---------------------------------------------------------------
 
 # Small resistive touchscreen is best suited to simple tap interactions.
@@ -149,9 +147,6 @@ class Button:
 		  if name == i.name:
 			self.iconBg = i
 			break
-
-
-
 
 # GPS Connection-------------------------------------------------------------
 # Connect to gpsd.
@@ -245,6 +240,16 @@ def gps_exif():
 # UI callbacks -------------------------------------------------------------
 # These are defined before globals because they're referenced by items in
 # the global buttons[] list.
+
+def cameraModeCallback():
+	global cameraMode
+	if cameraMode ==0:
+		cameraMode = 1
+		print(cameraMode)
+	else:
+		cameraMode = 0
+		print(cameraMode)
+	
 
 def isoCallback(n): # Pass 1 (next ISO) or -1 (prev ISO)
 	global isoMode
@@ -340,6 +345,9 @@ iconPath        = 'icons' # Subdirectory containing UI bitmaps (PNG format)
 saveIdx         = -1      # Image index for saving (-1 = none set yet)
 loadIdx         = -1      # Image index for loading
 scaled          = None    # pygame Surface w/last-loaded image
+cameraMode      = 0       #Mode Camera normal or sequence
+valuegps         =0       #Mode GPS default = Desactive
+gpsMode          =0       #Control color GPS
 
 # To use Dropbox uploader, must have previously run the dropbox_uploader.sh
 # script to set up the app key and such.  If this was done as the normal pi
@@ -477,7 +485,7 @@ buttons = [
    Button((  2, 60,100,120), bg='red', fg='gps-logo',
 	cb=gpsCallback, value=valuegps),
    Button((110, 60,100,120), fg='camera-mapillary',
-	cb=storeModeCallback, value=1),
+	cb=cameraModeCallback),
    Button((218, 60,100,120), bg='mapillary',
 	cb=storeModeCallback, value=2),
    Button((  0, 10,320, 35), bg='mapillary-logo')],
@@ -493,16 +501,16 @@ buttons = [
 
 
 # Assorted utility functions -----------------------------------------------
+
 def filename_sec():
-    global saveIdx, filename
-    while True:
-	    filename = pathData[storeMode] + '/IMG_' + '%04d' % saveIdx
-	    yield '%s.jpg' % (filename)
-	    if not os.path.isfile(filename): break
-	    saveIdx += 1
-	    if saveIdx > 9999: saveIdx = 0
-	  
-	  
+	global saveIdx, filename
+	while True:
+		filename = pathData[storeMode] + '/IMG_' + '%04d' % saveIdx + '.JPG'
+		yield '%s' % (filename)
+		if not os.path.isfile(filename): break
+		saveIdx += 1
+		if saveIdx > 9999: saveIdx = 0
+	  	  
 def setFxMode(n):
 	global fxMode
 	fxMode = n
@@ -609,11 +617,12 @@ def takePicture():
 	  storeModePrior = storeMode
 
 	# Scan for next available image slot
-	#while True:
-	#  filename = pathData[storeMode] + '/IMG_' + '%04d' % saveIdx + '.JPG'
-	#  if not os.path.isfile(filename): break
-	#  saveIdx += 1
-	#  if saveIdx > 9999: saveIdx = 0
+	if cameraMode ==0:
+		while True:
+			filename = pathData[storeMode] + '/IMG_' + '%04d' % saveIdx + '.JPG'
+			if not os.path.isfile(filename): break
+			saveIdx += 1
+			if saveIdx > 9999: saveIdx = 0
 
 	t = threading.Thread(target=spinner)
 	t.start()
@@ -622,22 +631,23 @@ def takePicture():
 	camera.resolution = sizeData[sizeMode][0]
 	camera.crop       = sizeData[sizeMode][2]
 	try:
-	  # Start taking pictures.
-	  camera.capture_sequence(filename_sec(), use_video_port=False, format='jpeg',
-	  thumbnail=None)
 	  
-	  #camera.capture(filename, use_video_port=False, format='jpeg',
-	  #thumbnail=None)
+	  if cameraMode ==1:
+		# Start taking pictures Sequence.
+		camera.capture_sequence(filename_sec(), use_video_port=False, format='jpeg',
+		thumbnail=None)
+		
+	  if cameraMode ==0:
+		#Start taking picture normal
+		camera.capture(filename, use_video_port=False, format='jpeg',
+		thumbnail=None)
 
-	  # Start taking pictures.
-		#cam.capture_sequence(wait(), burst=True
-
-	  # Set image file ownership to pi user, mode to 644
-	  # os.chown(filename, uid, gid) # Not working, why?
-	  #os.chmod(filename,
-		#stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
-	  #img    = pygame.image.load(filename)
-	  #scaled = pygame.transform.scale(img, sizeData[sizeMode][1])
+		# Set image file ownership to pi user, mode to 644
+		# os.chown(filename, uid, gid) # Not working, why?
+		os.chmod(filename,
+			stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
+	  img    = pygame.image.load(filename)
+	  scaled = pygame.transform.scale(img, sizeData[sizeMode][1])
 	  if storeMode == 2: # Dropbox
 		if upconfig:
 		  cmd = uploader + ' -f ' + upconfig + ' upload ' + filename + ' Photos/' + os.path.basename(filename)
