@@ -503,9 +503,9 @@ buttons = [
    # Screen mode 10 is stop sequence confirmation
   [Button((  0,35,320, 33), bg='stop'),
    Button(( 32,86,120,100), bg='yn', fg='yes',
-	cb=stopsequenceCallback), #, value=True
+	cb=stopsequenceCallback, value=True),
    Button((168,86,120,100), bg='yn', fg='no',
-	cb=stopsequenceCallback)], #, value=False]
+	cb=stopsequenceCallback, value=False)]
 ]
 
 
@@ -829,11 +829,11 @@ while(True):
 	# If in viewfinder or settings modes, stop processing touchscreen
 	# and refresh the display to show the live preview.  In other modes
 	# (image playback, etc.), stop and refresh the screen only when
-	# screenMode changes.
-	if screenMode >= 3 or screenMode == 10 or screenMode != screenModePrior: break
+	# screenMode changes.or screenMode == 10
+	if screenMode >= 3 or screenMode != screenModePrior: break
 
   # Refresh display
-  if screenMode >= 3 or screenMode == 10: # Viewfinder or settings modes
+  if screenMode >= 3: # Viewfinder or settings modes
 	stream = io.BytesIO() # Capture into in-memory stream
 	camera.capture(stream, use_video_port=True, format='raw')
 	stream.seek(0)
