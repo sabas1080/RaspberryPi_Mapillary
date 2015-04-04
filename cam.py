@@ -164,7 +164,7 @@ def gpsCallback(n): # Pass 1 (Desactive GPS) or 0 (Activate GPS)
 			#valuegps=1
 			
 		except: #(No GPS)
-			print("No cargado GPS")
+			print("No Detect GPS")
 			buttons[8][gpsMode + 3].setBg('yellow')
 			#valuegps=0
 			
@@ -241,6 +241,9 @@ def gps_exif():
 # These are defined before globals because they're referenced by items in
 # the global buttons[] list.
 
+def stopsequenceCallback():
+	print("detener secuencia")
+
 def cameraModeCallback():
 	global cameraMode
 	if cameraMode ==0:
@@ -258,8 +261,8 @@ def isoCallback(n): # Pass 1 (next ISO) or -1 (prev ISO)
 def settingCallback(n): # Pass 1 (next setting) or -1 (prev setting)
 	global screenMode
 	screenMode += n
-	if screenMode < 4:               screenMode = len(buttons) - 1
-	elif screenMode >= len(buttons): screenMode = 4
+	if screenMode < 4:               screenMode = len(buttons) - 2
+	elif screenMode >= (len(buttons) - 1): screenMode = 4
 
 def fxCallback(n): # Pass 1 (next effect) or -1 (prev effect)
 	global fxMode
@@ -490,13 +493,19 @@ buttons = [
 	cb=storeModeCallback, value=2),
    Button((  0, 10,320, 35), bg='mapillary-logo')],
 
-
 # Screen mode 9 is quit confirmation
   [Button((  0,188,320, 52), bg='done'   , cb=doneCallback),
    Button((  0,  0, 80, 52), bg='prev'   , cb=settingCallback, value=-1),
    Button((240,  0, 80, 52), bg='next'   , cb=settingCallback, value= 1),
    Button((110, 60,100,120), bg='quit-ok', cb=quitCallback),
-   Button((  0, 10,320, 35), bg='quit')]
+   Button((  0, 10,320, 35), bg='quit')],
+   
+   # Screen mode 10 is stop sequence confirmation
+  [Button((  0,35,320, 33), bg='stop'),
+   Button(( 32,86,120,100), bg='yn', fg='yes',
+	cb=stopsequenceCallback), #, value=True
+   Button((168,86,120,100), bg='yn', fg='no',
+	cb=stopsequenceCallback)], #, value=False]
 ]
 
 
@@ -510,7 +519,7 @@ def filename_sec():
 		if not os.path.isfile(filename): break
 		saveIdx += 1
 		if saveIdx > 9999: saveIdx = 0
-	  	  
+		  
 def setFxMode(n):
 	global fxMode
 	fxMode = n
@@ -588,6 +597,30 @@ def spinner():
 	buttons[screenMode][4].setBg(None)
 	screenModePrior = -1 # Force refresh
 
+def stop():
+	global busy, screenMode, screenModePrior
+	screenMode      =  10
+	buttons[screenMode][0].setBg('stop')
+	buttons[screenMode][1].setBg('yes')
+	buttons[screenMode][2].setBg('no')
+	buttons[screenMode][0].draw(screen)
+	buttons[screenMode][1].draw(screen)
+	buttons[screenMode][2].draw(screen)
+	pygame.display.update()
+
+	busy = True
+	n    = 0
+	while busy is True:
+	  buttons[screenMode][2].setBg('work-' + str(n))
+	  buttons[screenMode][2].draw(screen)
+	  pygame.display.update()
+	  n = (n + 1) % 5
+	  time.sleep(0.15)
+
+	buttons[screenMode][1].setBg(None)
+	buttons[screenMode][2].setBg(None)
+	screenModePrior = -1 # Force refresh
+
 def takePicture():
 	global busy, gid, loadIdx, saveIdx, scaled, sizeMode, storeMode, storeModePrior, uid
 
@@ -624,20 +657,30 @@ def takePicture():
 			saveIdx += 1
 			if saveIdx > 9999: saveIdx = 0
 
-	t = threading.Thread(target=spinner)
-	t.start()
+	#t = threading.Thread(target=spinner)
+	#t.start()
 
 	scaled = None
 	camera.resolution = sizeData[sizeMode][0]
 	camera.crop       = sizeData[sizeMode][2]
 	try:
 	  
-	  if cameraMode ==1:
+	  if cameraMode ==1: #buttons[6][5]
+		#screenMode      =  0
+		#screenModePrior = -1
+		#screenMode = 10
+		t = threading.Thread(target=stop)
+		t.start()
+		#buttons[10][2].setBg('working')
+		#pygame.display.update()
 		# Start taking pictures Sequence.
 		camera.capture_sequence(filename_sec(), use_video_port=False, format='jpeg',
 		thumbnail=None)
 		
 	  if cameraMode ==0:
+		t = threading.Thread(target=spinner)
+		t.start()
+		
 		#Start taking picture normal
 		camera.capture(filename, use_video_port=False, format='jpeg',
 		thumbnail=None)
@@ -787,10 +830,10 @@ while(True):
 	# and refresh the display to show the live preview.  In other modes
 	# (image playback, etc.), stop and refresh the screen only when
 	# screenMode changes.
-	if screenMode >= 3 or screenMode != screenModePrior: break
+	if screenMode >= 3 or screenMode == 10 or screenMode != screenModePrior: break
 
   # Refresh display
-  if screenMode >= 3: # Viewfinder or settings modes
+  if screenMode >= 3 or screenMode == 10: # Viewfinder or settings modes
 	stream = io.BytesIO() # Capture into in-memory stream
 	camera.capture(stream, use_video_port=True, format='raw')
 	stream.seek(0)
@@ -819,5 +862,6 @@ while(True):
   pygame.display.update()
 
   screenModePrior = screenMode
+
 
 
