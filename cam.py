@@ -248,9 +248,11 @@ def cameraModeCallback():
 	global cameraMode
 	if cameraMode ==0:
 		cameraMode = 1
+		buttons[8][4].setBg('camera-mapillary-2')
 		print(cameraMode)
 	else:
 		cameraMode = 0
+		buttons[8][4].setBg('camera-mapillary')
 		print(cameraMode)
 	
 
@@ -487,7 +489,7 @@ buttons = [
    Button((240,  0, 80, 52), bg='next', cb=settingCallback, value= 1),
    Button((  2, 60,100,120), bg='red', fg='gps-logo',
 	cb=gpsCallback, value=valuegps),
-   Button((110, 60,100,120), fg='camera-mapillary',
+   Button((110, 60,100,120), bg='camera-mapillary',
 	cb=cameraModeCallback),
    Button((218, 60,100,120), bg='mapillary',
 	cb=storeModeCallback, value=2),
