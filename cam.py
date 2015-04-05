@@ -862,7 +862,3 @@ while(True):
   pygame.display.update()
 
   screenModePrior = screenMode
-
-
-
->>>>>>> bugupload
