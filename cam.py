@@ -514,8 +514,10 @@ buttons = [
 def filename_sec():
 	global saveIdx, filename
 	while True:
-		filename = pathData[storeMode] + '/IMG_' + '%04d' % saveIdx + '.JPG'
-		yield '%s' % (filename)
+		filename = pathData[storeMode] + '/IMG_' + '%04d' % saveIdx 
+		#pathData[storeMode] + '/IMG_' + '%04d' % n + '.JPG')
+		yield '%s' % (filename) + '.JPG'
+		#yield '/media/data/pictures/' + now.strftime('%s') + '.jpg'
 		if not os.path.isfile(filename): break
 		saveIdx += 1
 		if saveIdx > 9999: saveIdx = 0
@@ -608,17 +610,17 @@ def stop():
 	buttons[screenMode][2].draw(screen)
 	pygame.display.update()
 
-	busy = True
-	n    = 0
-	while busy is True:
-	  buttons[screenMode][2].setBg('work-' + str(n))
-	  buttons[screenMode][2].draw(screen)
-	  pygame.display.update()
-	  n = (n + 1) % 5
-	  time.sleep(0.15)
+	#busy = True
+	#n    = 0
+	#while busy is True:
+	  #buttons[screenMode][2].setBg('work-' + str(n))
+	  #buttons[screenMode][2].draw(screen)
+	  #pygame.display.update()
+	  #n = (n + 1) % 5
+	  #time.sleep(0.15)
 
-	buttons[screenMode][1].setBg(None)
-	buttons[screenMode][2].setBg(None)
+	#buttons[screenMode][1].setBg(None)
+	#buttons[screenMode][2].setBg(None)
 	screenModePrior = -1 # Force refresh
 
 def takePicture():
@@ -668,7 +670,7 @@ def takePicture():
 	  if cameraMode ==1: #buttons[6][5]
 		#screenMode      =  0
 		#screenModePrior = -1
-		#screenMode = 10
+		screenMode = 10
 		t = threading.Thread(target=stop)
 		t.start()
 		#buttons[10][2].setBg('working')
@@ -676,21 +678,22 @@ def takePicture():
 		# Start taking pictures Sequence.
 		camera.capture_sequence(filename_sec(), use_video_port=False, format='jpeg',
 		thumbnail=None)
+		print("Pasa secuencia")
 		
 	  if cameraMode ==0:
 		t = threading.Thread(target=spinner)
 		t.start()
 		
 		#Start taking picture normal
-		camera.capture(filename, use_video_port=False, format='jpeg',
+		camera.continuous(filename, use_video_port=False, format='jpeg',
 		thumbnail=None)
 
 		# Set image file ownership to pi user, mode to 644
 		# os.chown(filename, uid, gid) # Not working, why?
 		os.chmod(filename,
 			stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
-	  img    = pygame.image.load(filename)
-	  scaled = pygame.transform.scale(img, sizeData[sizeMode][1])
+		img    = pygame.image.load(filename)
+		scaled = pygame.transform.scale(img, sizeData[sizeMode][1])
 	  if storeMode == 2: # Dropbox
 		if upconfig:
 		  cmd = uploader + ' -f ' + upconfig + ' upload ' + filename + ' Photos/' + os.path.basename(filename)
@@ -778,7 +781,7 @@ yuv = bytearray(320 * 240 * 3 / 2)
 
 # Init pygame and screen
 pygame.init()
-pygame.mouse.set_visible(False)
+pygame.mouse.set_visible(True) #False
 screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 
 # Init camera and set up default values
@@ -788,13 +791,6 @@ camera.resolution = sizeData[sizeMode][1]
 #camera.crop       = sizeData[sizeMode][2]
 camera.crop       = (0.0, 0.0, 1.0, 1.0)
 # Leave raw format at default YUV, don't touch, don't set to RGB!
-
-# Connect to gpsd.
-#bashCommand = "sudo gpsd /dev/ttyAMA0 -F /var/run/gpsd.sock"
-#os.system(bashCommand)
-#gpsd = gps.gps(mode=gps.WATCH_ENABLE)
-#g = threading.Thread(target=gps_exif)
-#g.start()
 
 # Load all icons at startup.
 for file in os.listdir(iconPath):
@@ -829,7 +825,7 @@ while(True):
 	# If in viewfinder or settings modes, stop processing touchscreen
 	# and refresh the display to show the live preview.  In other modes
 	# (image playback, etc.), stop and refresh the screen only when
-	# screenMode changes.or screenMode == 10
+	# screenMode changes. or screenMode ==10
 	if screenMode >= 3 or screenMode != screenModePrior: break
 
   # Refresh display
