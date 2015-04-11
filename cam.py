@@ -240,9 +240,13 @@ def gps_exif():
 # UI callbacks -------------------------------------------------------------
 # These are defined before globals because they're referenced by items in
 # the global buttons[] list.
-
-def stopsequenceCallback():
-	print("detener secuencia")
+def stopsequenceCallback(n):
+    if n is True:
+        stop = 1
+        print("empieza secuencia")
+    if n is False:
+        stop = 0
+        print("empieza secuencia")
 
 def cameraModeCallback():
 	global cameraMode
@@ -334,6 +338,40 @@ def sizeModeCallback(n): # Radio buttons on size settings screen
 	camera.resolution = sizeData[sizeMode][1]
 #	camera.crop       = sizeData[sizeMode][2]
 
+def filename_sec():
+	global saveIdx, filename, busy, gid, loadIdx, scaled, sizeMode, storeMode, storeModePrior, uid, stop, sizeData
+	#print ("inicio hilo")
+	#screenMode      =  10
+	#buttons[screenMode][0].setBg('stop')
+	#buttons[screenMode][1].setBg('yes')
+	#buttons[screenMode][2].setBg('no')
+	#buttons[screenMode][0].draw(screen)
+	#buttons[screenMode][1].draw(screen)
+	#buttons[screenMode][2].draw(screen)
+	#pygame.display.update()
+	#camera.start_preview()
+	#camera.resolution = sizeData[sizeMode][0]
+	#camera.crop       = sizeData[sizeMode][2]
+
+	while stop is 0:
+		while True:
+			filename = pathData[storeMode] + '/IMG_' + '%04d' % saveIdx + '.JPG'
+			if not os.path.isfile(filename): break
+			saveIdx += 1
+			if saveIdx > 9999: saveIdx = 0 
+		#yield '%s' % (filename) + '.JPG'
+		#print ("inicio capturando")
+		#scaled = None
+		#camera.resolution = (2592, 1944)
+		#camera.crop       = sizeData[sizeMode][2]
+		
+		camera.capture(filename, splitter_port=1, use_video_port=True, format='jpeg',
+		thumbnail=None)
+		
+		#os.chmod(filename,
+		#	stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
+		#print ("capturado")
+		#screenModePrior = -1 # Force refresh
 
 
 # Global stuff -------------------------------------------------------------
@@ -351,8 +389,9 @@ saveIdx         = -1      # Image index for saving (-1 = none set yet)
 loadIdx         = -1      # Image index for loading
 scaled          = None    # pygame Surface w/last-loaded image
 cameraMode      = 0       #Mode Camera normal or sequence
-valuegps         =0       #Mode GPS default = Desactive
-gpsMode          =0       #Control color GPS
+valuegps        = 0       #Mode GPS default = Desactive
+gpsMode         = 0       #Control color GPS
+stop            = 0
 
 # To use Dropbox uploader, must have previously run the dropbox_uploader.sh
 # script to set up the app key and such.  If this was done as the normal pi
@@ -505,24 +544,14 @@ buttons = [
    # Screen mode 10 is stop sequence confirmation
   [Button((  0,35,320, 33), bg='stop'),
    Button(( 32,86,120,100), bg='yn', fg='yes',
-	cb=stopsequenceCallback, value=True),
+	cb=filename_sec, value=True),
    Button((168,86,120,100), bg='yn', fg='no',
-	cb=stopsequenceCallback, value=False)]
+	cb=filename_sec, value=False)]
 ]
 
 
 # Assorted utility functions -----------------------------------------------
 
-def filename_sec():
-	global saveIdx, filename
-	while True:
-		filename = pathData[storeMode] + '/IMG_' + '%04d' % saveIdx 
-		#pathData[storeMode] + '/IMG_' + '%04d' % n + '.JPG')
-		yield '%s' % (filename) + '.JPG'
-		#yield '/media/data/pictures/' + now.strftime('%s') + '.jpg'
-		if not os.path.isfile(filename): break
-		saveIdx += 1
-		if saveIdx > 9999: saveIdx = 0
 		  
 def setFxMode(n):
 	global fxMode
@@ -590,6 +619,7 @@ def spinner():
 
 	busy = True
 	n    = 0
+	stop = 0
 	while busy is True:
 	  buttons[screenMode][4].setBg('work-' + str(n))
 	  buttons[screenMode][4].draw(screen)
@@ -601,32 +631,8 @@ def spinner():
 	buttons[screenMode][4].setBg(None)
 	screenModePrior = -1 # Force refresh
 
-def stop():
-	global busy, screenMode, screenModePrior
-	screenMode      =  10
-	buttons[screenMode][0].setBg('stop')
-	buttons[screenMode][1].setBg('yes')
-	buttons[screenMode][2].setBg('no')
-	buttons[screenMode][0].draw(screen)
-	buttons[screenMode][1].draw(screen)
-	buttons[screenMode][2].draw(screen)
-	pygame.display.update()
-
-	#busy = True
-	#n    = 0
-	#while busy is True:
-	  #buttons[screenMode][2].setBg('work-' + str(n))
-	  #buttons[screenMode][2].draw(screen)
-	  #pygame.display.update()
-	  #n = (n + 1) % 5
-	  #time.sleep(0.15)
-
-	#buttons[screenMode][1].setBg(None)
-	#buttons[screenMode][2].setBg(None)
-	screenModePrior = -1 # Force refresh
-
 def takePicture():
-	global busy, gid, loadIdx, saveIdx, scaled, sizeMode, storeMode, storeModePrior, uid
+	global busy, gid, loadIdx, saveIdx, scaled, sizeMode, storeMode, storeModePrior, uid, stop
 
 	if not os.path.isdir(pathData[storeMode]):
 	  try:
@@ -669,25 +675,27 @@ def takePicture():
 	camera.crop       = sizeData[sizeMode][2]
 	try:
 	  
-	  if cameraMode ==1: #buttons[6][5]
-		#screenMode      =  0
-		#screenModePrior = -1
-		screenMode = 10
-		t = threading.Thread(target=stop)
-		t.start()
-		#buttons[10][2].setBg('working')
-		#pygame.display.update()
-		# Start taking pictures Sequence.
-		camera.capture_sequence(filename_sec(), use_video_port=False, format='jpeg',
-		thumbnail=None)
-		print("Pasa secuencia")
+	  if cameraMode ==1:
+		#screenMode = 10
+		#s = threading.Thread(target=filename_sec) #,args=(False,) 
+		#s.start()
+		if stop == 0:
+			# Start taking pictures Sequence.
+			s = threading.Thread(target=filename_sec) #,args=(False,) 
+			s.start()
+			print("Pasa secuencia")
+		
+		if stop == 1: 
+			s.join
+			print("detenido")
+			stop = 0
 		
 	  if cameraMode ==0:
 		t = threading.Thread(target=spinner)
 		t.start()
 		
 		#Start taking picture normal
-		camera.continuous(filename, use_video_port=False, format='jpeg',
+		camera.capture(filename, use_video_port=False, format='jpeg',
 		thumbnail=None)
 
 		# Set image file ownership to pi user, mode to 644
@@ -705,11 +713,14 @@ def takePicture():
 
 	finally:
 	  # Add error handling/indicator (disk full, etc.)
+	  print("entro")
 	  camera.resolution = sizeData[sizeMode][1]
 	  camera.crop       = (0.0, 0.0, 1.0, 1.0)
+	  print("salio")
 
-	busy = False
-	t.join()
+	if cameraMode == 0: 
+		busy = False
+		t.join()
 
 	if scaled:
 	  if scaled.get_height() < 240: # Letterbox
@@ -819,6 +830,7 @@ while(True):
 
   # Process touchscreen input
   while True:
+	#print("touch")
 	for event in pygame.event.get():
 	  if(event.type is MOUSEBUTTONDOWN):
 		pos = pygame.mouse.get_pos()
@@ -827,11 +839,11 @@ while(True):
 	# If in viewfinder or settings modes, stop processing touchscreen
 	# and refresh the display to show the live preview.  In other modes
 	# (image playback, etc.), stop and refresh the screen only when
-	# screenMode changes. or screenMode ==10
+	# screenMode changes. or screenMode >= 10
 	if screenMode >= 3 or screenMode != screenModePrior: break
-
+	  
   # Refresh display
-  if screenMode >= 3: # Viewfinder or settings modes
+  if screenMode >= 3 or screenMode <= 9: # Viewfinder or settings modes >
 	stream = io.BytesIO() # Capture into in-memory stream
 	camera.capture(stream, use_video_port=True, format='raw')
 	stream.seek(0)
