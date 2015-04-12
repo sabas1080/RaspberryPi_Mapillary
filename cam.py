@@ -241,12 +241,13 @@ def gps_exif():
 # These are defined before globals because they're referenced by items in
 # the global buttons[] list.
 def stopsequenceCallback(n):
-    if n is True:
-        stop = 1
-        print("empieza secuencia")
-    if n is False:
-        stop = 0
-        print("empieza secuencia")
+	global stop
+	if n is True:
+		stop = 1
+		print("detener secuencia")
+	if n is False:
+		stop = 0
+		print("empieza secuencia")
 
 def cameraModeCallback():
 	global cameraMode
@@ -340,20 +341,20 @@ def sizeModeCallback(n): # Radio buttons on size settings screen
 
 def filename_sec():
 	global saveIdx, filename, busy, gid, loadIdx, scaled, sizeMode, storeMode, storeModePrior, uid, stop, sizeData
-	#print ("inicio hilo")
-	#screenMode      =  10
-	#buttons[screenMode][0].setBg('stop')
-	#buttons[screenMode][1].setBg('yes')
-	#buttons[screenMode][2].setBg('no')
-	#buttons[screenMode][0].draw(screen)
-	#buttons[screenMode][1].draw(screen)
-	#buttons[screenMode][2].draw(screen)
-	#pygame.display.update()
+	print ("inicio hilo")
 	#camera.start_preview()
 	#camera.resolution = sizeData[sizeMode][0]
 	#camera.crop       = sizeData[sizeMode][2]
 
-	while stop is 0:
+	while True:
+		#screenMode      =  10
+		#buttons[screenMode][0].setBg('stop')
+		#buttons[screenMode][1].setBg('yes')
+		#buttons[screenMode][2].setBg('no')
+		#buttons[screenMode][0].draw(screen)
+		#buttons[screenMode][1].draw(screen)
+		#buttons[screenMode][2].draw(screen)
+		#pygame.display.update()
 		while True:
 			filename = pathData[storeMode] + '/IMG_' + '%04d' % saveIdx + '.JPG'
 			if not os.path.isfile(filename): break
@@ -361,9 +362,9 @@ def filename_sec():
 			if saveIdx > 9999: saveIdx = 0 
 		#yield '%s' % (filename) + '.JPG'
 		#print ("inicio capturando")
-		#scaled = None
-		#camera.resolution = (2592, 1944)
-		#camera.crop       = sizeData[sizeMode][2]
+		#scaled = None #posible error
+		#camera.resolution = sizeData[sizeMode][0] #posible error
+		#camera.crop       = sizeData[sizeMode][2] #posible error
 		
 		camera.capture(filename, splitter_port=1, use_video_port=True, format='jpeg',
 		thumbnail=None)
@@ -371,7 +372,7 @@ def filename_sec():
 		#os.chmod(filename,
 		#	stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
 		#print ("capturado")
-		#screenModePrior = -1 # Force refresh
+		#camera.stop()
 
 
 # Global stuff -------------------------------------------------------------
@@ -391,7 +392,7 @@ scaled          = None    # pygame Surface w/last-loaded image
 cameraMode      = 0       #Mode Camera normal or sequence
 valuegps        = 0       #Mode GPS default = Desactive
 gpsMode         = 0       #Control color GPS
-stop            = 0
+stop            = False
 
 # To use Dropbox uploader, must have previously run the dropbox_uploader.sh
 # script to set up the app key and such.  If this was done as the normal pi
@@ -676,19 +677,23 @@ def takePicture():
 	try:
 	  
 	  if cameraMode ==1:
-		#screenMode = 10
-		#s = threading.Thread(target=filename_sec) #,args=(False,) 
-		#s.start()
-		if stop == 0:
+		
+		if stop == False:
 			# Start taking pictures Sequence.
-			s = threading.Thread(target=filename_sec) #,args=(False,) 
+			s = threading.Thread(target=filename_sec)
 			s.start()
 			print("Pasa secuencia")
+			screenMode =10
+			print(stop)
 		
-		if stop == 1: 
+		if stop == True: 
+			#camera.close()
 			s.join
+			#camera.close()
 			print("detenido")
-			stop = 0
+			screenMode=3
+			print(stop)
+			screenModePrior = -1 # Force refresh
 		
 	  if cameraMode ==0:
 		t = threading.Thread(target=spinner)
@@ -713,10 +718,13 @@ def takePicture():
 
 	finally:
 	  # Add error handling/indicator (disk full, etc.)
-	  print("entro")
 	  camera.resolution = sizeData[sizeMode][1]
 	  camera.crop       = (0.0, 0.0, 1.0, 1.0)
 	  print("salio")
+	
+	if cameraMode ==1:
+		stop = not stop
+		print(stop)
 
 	if cameraMode == 0: 
 		busy = False
@@ -843,7 +851,7 @@ while(True):
 	if screenMode >= 3 or screenMode != screenModePrior: break
 	  
   # Refresh display
-  if screenMode >= 3 or screenMode <= 9: # Viewfinder or settings modes >
+  if screenMode <= 3 or screenMode <= 9: # Viewfinder or settings modes >
 	stream = io.BytesIO() # Capture into in-memory stream
 	camera.capture(stream, use_video_port=True, format='raw')
 	stream.seek(0)
