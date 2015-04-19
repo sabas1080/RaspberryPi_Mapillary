@@ -362,12 +362,15 @@ def filename_sec():
 		#print ("capturado")
 		#camera.stop()
 
+#Mapillary Upload Pictures
+#you must first configure mapillary environment variables
 def mapillaryUpCallback():
     global indexSplit
     
     cmd = split + pathData[storeMode]
     call ([cmd], shell=True)
-    cmd = upload + '/home/pi/Photos/0' #Only work in directory 0 for now
+    cmd = upload + pathData[storeMode]+'/0' #Only work in directory 0 for now
+    call ([cmd], shell=True)
 
 # Global stuff -------------------------------------------------------------
 
@@ -386,7 +389,7 @@ scaled          = None    # pygame Surface w/last-loaded image
 cameraMode      = 0       #Mode Camera normal or sequence
 valuegps        = 0       #Mode GPS default = Desactive
 gpsMode         = 0       #Control color GPS
-indexSplit      = 0       #Variable Control index Split
+#indexSplit      = 0       #Variable Control index Split
 stop            = False   #Variable control stop filename_sec
 
 # To use Dropbox uploader, must have previously run the dropbox_uploader.sh
@@ -798,7 +801,7 @@ yuv = bytearray(320 * 240 * 3 / 2)
 
 # Init pygame and screen
 pygame.init()
-pygame.mouse.set_visible(True) #False
+pygame.mouse.set_visible(True) #Visible Mouse Activate for Debugging
 screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 
 # Init camera and set up default values
