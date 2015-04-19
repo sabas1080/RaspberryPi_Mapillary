@@ -11,8 +11,7 @@ adafruit-pi-cam con los elementos del proyecto Mapillary
 ===============
 **BUGS**<br>
 ===============
-* Not working continuous camera<br>
-* Not working scripts mapillary<br>
+* Not working continuous camera<br>>
 
 Camera project for Raspberry Pi + camera + Adafruit PiTFT + GPS + Mapillary<br>
 
