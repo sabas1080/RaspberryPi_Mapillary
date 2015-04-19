@@ -181,7 +181,7 @@ def gps_exif():
 	global camera
 	while True:
 		report = gpsd.next()
-		#print report
+		#print report #Debugging
 		# Wait for position information.
 		if report['class'] == 'TPV':
 			# Set orientation to normal landscape.
@@ -189,25 +189,25 @@ def gps_exif():
  
 			# Set picture date and time to GPS values.
 			now = parser.parse(report.get('time', datetime.now().isoformat()))
-			#print now.strftime('%s')
+			#print now.strftime('%s') #Debugging
 			camera.exif_tags['EXIF.DateTimeOriginal'] = now.strftime('%Y:%m:%d %H:%M:%S')
  
 			# Set altitude to GPS value.
 			alt = report.get('alt', 0.0)
-			#print alt
+			#print alt #Debugging
 			camera.exif_tags['GPS.GPSAltitudeRef'] = '0' if alt > 0 else '1'
 			aalt = math.fabs(alt)
 			camera.exif_tags['GPS.GPSAltitude'] = '%d/100' % int(100 * aalt)
  
 			# Convert speed from m/s to km/h and set tag.
 			speed = report.get('speed', 0.0)
-			#print speed
+			#print speed #Debugging
 			camera.exif_tags['GPS.GPSSpeedRef'] = 'K'
 			camera.exif_tags['GPS.GPSSpeed'] = '%d/1000' % int(3600 * speed)
  
 			# Set direction of motion and direction along which the picture is taken (assuming frontal view).
 			track = report.get('track', 0.0)
-			#print track
+			#print track #Debugging
 			camera.exif_tags['GPS.GPSTrackRef'] = 'T'
 			camera.exif_tags['GPS.GPSTrack'] = '%d/10' % int(10 * track)
 			camera.exif_tags['GPS.GPSImgDirectionRef'] = 'T'
@@ -215,7 +215,7 @@ def gps_exif():
  
 			# Set GPS latitude.
 			lat = report.get('lat', 0.0)
-			#print lat
+			#print lat #Debugging
 			camera.exif_tags['GPS.GPSLatitudeRef'] = 'N' if lat > 0 else 'S'
 			alat = math.fabs(lat)
 			dlat = int(alat)
@@ -225,7 +225,7 @@ def gps_exif():
  
 			# Set GPS longitude.
 			lon = report.get('lon', 0.0)
-			#print lon
+			#print lon #Debugging
 			camera.exif_tags['GPS.GPSLongitudeRef'] = 'E' if lon > 0 else 'W'
 			alon = math.fabs(lon)
 			dlon = int(alon)
@@ -244,12 +244,12 @@ def stopsequenceCallback(n):
 	global stop
 	if n is True:
 		stop = 1
-		print("detener secuencia")
+		#print("detener secuencia") #Debugging
 	if n is False:
 		stop = 0
-		print("empieza secuencia")
+		#print("empieza secuencia") #Debugging
 
-def cameraModeCallback():
+def cameraModeCallback(): #Camenra Mode Normal or continuous camera
 	global cameraMode
 	if cameraMode ==0:
 		cameraMode = 1
@@ -258,7 +258,7 @@ def cameraModeCallback():
 	else:
 		cameraMode = 0
 		buttons[8][4].setBg('camera-mapillary')
-		print(cameraMode)
+		#print(cameraMode) #Debugging
 	
 
 def isoCallback(n): # Pass 1 (next ISO) or -1 (prev ISO)
@@ -340,32 +340,20 @@ def sizeModeCallback(n): # Radio buttons on size settings screen
 #	camera.crop       = sizeData[sizeMode][2]
 
 def filename_sec():
+#####################################################################################
+#NOT WORKING BETA TEST continuous camera
+####################################################################################
 	global saveIdx, filename, busy, gid, loadIdx, scaled, sizeMode, storeMode, storeModePrior, uid, stop, sizeData
-	print ("inicio hilo")
-	#camera.start_preview()
-	#camera.resolution = sizeData[sizeMode][0]
-	#camera.crop       = sizeData[sizeMode][2]
-
+	print ("inicio hilo") #Debugging
 	while True:
-		#screenMode      =  10
-		#buttons[screenMode][0].setBg('stop')
-		#buttons[screenMode][1].setBg('yes')
-		#buttons[screenMode][2].setBg('no')
-		#buttons[screenMode][0].draw(screen)
-		#buttons[screenMode][1].draw(screen)
-		#buttons[screenMode][2].draw(screen)
-		#pygame.display.update()
 		while True:
 			filename = pathData[storeMode] + '/IMG_' + '%04d' % saveIdx + '.JPG'
 			if not os.path.isfile(filename): break
 			saveIdx += 1
 			if saveIdx > 9999: saveIdx = 0 
 		#yield '%s' % (filename) + '.JPG'
-		#print ("inicio capturando")
-		#scaled = None #posible error
-		#camera.resolution = sizeData[sizeMode][0] #posible error
-		#camera.crop       = sizeData[sizeMode][2] #posible error
-		
+		#print ("inicio capturando") #Debugging
+        
 		camera.capture(filename, splitter_port=1, use_video_port=True, format='jpeg',
 		thumbnail=None)
 		
@@ -392,7 +380,7 @@ scaled          = None    # pygame Surface w/last-loaded image
 cameraMode      = 0       #Mode Camera normal or sequence
 valuegps        = 0       #Mode GPS default = Desactive
 gpsMode         = 0       #Control color GPS
-stop            = False
+stop            = False   #Variable control stop filename_sec
 
 # To use Dropbox uploader, must have previously run the dropbox_uploader.sh
 # script to set up the app key and such.  If this was done as the normal pi
@@ -679,10 +667,10 @@ def takePicture():
 	  if cameraMode ==1:
 		
 		if stop == False:
-			# Start taking pictures Sequence.
+			# Start continuous camera
 			s = threading.Thread(target=filename_sec)
 			s.start()
-			print("Pasa secuencia")
+			print("Pasa secuencia") #Debugging
 			screenMode =10
 			print(stop)
 		
@@ -690,12 +678,13 @@ def takePicture():
 			#camera.close()
 			s.join
 			#camera.close()
-			print("detenido")
+			print("detenido") #Debugging
 			screenMode=3
 			print(stop)
 			screenModePrior = -1 # Force refresh
 		
 	  if cameraMode ==0:
+        # Start normal camera
 		t = threading.Thread(target=spinner)
 		t.start()
 		
@@ -720,7 +709,7 @@ def takePicture():
 	  # Add error handling/indicator (disk full, etc.)
 	  camera.resolution = sizeData[sizeMode][1]
 	  camera.crop       = (0.0, 0.0, 1.0, 1.0)
-	  print("salio")
+	  print("salio") #Debugging
 	
 	if cameraMode ==1:
 		stop = not stop
