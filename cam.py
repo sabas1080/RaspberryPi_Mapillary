@@ -362,6 +362,12 @@ def filename_sec():
 		#print ("capturado")
 		#camera.stop()
 
+def mapillaryUpCallback():
+    global indexSplit
+    
+    cmd = split + pathData[storeMode]
+    call ([cmd], shell=True)
+    cmd = upload + '/home/pi/Photos/0' #Only work in directory 0 for now
 
 # Global stuff -------------------------------------------------------------
 
@@ -380,6 +386,7 @@ scaled          = None    # pygame Surface w/last-loaded image
 cameraMode      = 0       #Mode Camera normal or sequence
 valuegps        = 0       #Mode GPS default = Desactive
 gpsMode         = 0       #Control color GPS
+indexSplit      = 0       #Variable Control index Split
 stop            = False   #Variable control stop filename_sec
 
 # To use Dropbox uploader, must have previously run the dropbox_uploader.sh
@@ -394,8 +401,8 @@ upconfig        = '/home/pi/.dropbox_uploader'
 # To use Mapillary upload and split, must have previously modify Mapillary 
 #environment variables 
 
-upload      = '/home/pi/mapillary_tools/python/upload_with_authentication.py'
-split      = '/home/pi/mapillary_tools/python/time_split.py'
+upload      = 'python /home/pi/mapillary_tools/python/upload_with_authentication.py '
+split      = 'python /home/pi/mapillary_tools/python/time_split.py '
 
 sizeData = [ # Camera parameters for different size settings
  # Full res      Viewfinder  Crop window
@@ -520,7 +527,7 @@ buttons = [
    Button((110, 60,100,120), bg='camera-mapillary',
 	cb=cameraModeCallback),
    Button((218, 60,100,120), bg='mapillary',
-	cb=storeModeCallback, value=2),
+	cb=mapillaryUpCallback),
    Button((  0, 10,320, 35), bg='mapillary-logo')],
 
 # Screen mode 9 is quit confirmation
