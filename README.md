@@ -3,17 +3,23 @@
 Este proyecto es realizado con la intencion de integrar los elementos de 
 adafruit-pi-cam con los elementos del proyecto Mapillary
 
-*En este momento funciona con un GPS GY-NEO6MV2
+*En este momento funciona con un GPS GY-NEO6MV2<br>
 
 ===============
+BUGS<br>
+*Not working continuous camera
+*Not working scripts mapillary
 
-Camera project for Raspberry Pi + camera + Adafruit PiTFT + GPS + Mapillary
+===============
+===============
 
-By Sabas of The Inventor's House Hackerspace modifications of GPS and Mapillary
+Camera project for Raspberry Pi + camera + Adafruit PiTFT + GPS + Mapillary<br>
 
-By PaintYourDragon (Phil B) for Adafruit Industries
+By Sabas of The Inventor's House Hackerspace modifications of GPS and Mapillary<br>
 
-Read how to build this project over at comingsoon
+By PaintYourDragon (Phil B) for Adafruit Industries<br>
+
+Read how to build this project over at comingsoon<br>
 
 Contributing to this software is warmly welcomed. You can do this basically by<br>
 [forking](https://help.github.com/articles/fork-a-repo), committing modifications and then [pulling requests](https://help.github.com/articles/using-pull-requests) (follow the links above<br>
