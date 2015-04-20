@@ -19,7 +19,11 @@
 # Dropbox setup (if using the Dropbox upload feature):
 # http://raspi.tv/2013/how-to-use-dropbox-with-raspberry-pi
 #
+#########################################################
+#Pre-installer
+#################################
 #sudo apt-get install python-pip
+#
 #sudo pip install python-dateutil
 #
 #sudo apt-get install gpsd gpsd-clients python-gps
@@ -32,8 +36,8 @@
 #
 #pip install exifread
 #
-# Written by Phil Burgess / Paint Your Dragon for Adafruit Industries.
 
+# Written by Phil Burgess / Paint Your Dragon for Adafruit Industries.
 #Mapillary and GPS features
 #Andres Sabas The Inventor's House Hackerspace
 #s@theinventorhouse.org
@@ -382,7 +386,7 @@ storeModePrior  = -1      # Prior storage mode (for detecting changes)
 sizeMode        =  0      # Image size; default = Large
 fxMode          =  0      # Image effect; default = Normal
 isoMode         =  0      # ISO settingl default = Auto
-iconPath        = 'icons' # Subdirectory containing UI bitmaps (PNG format)
+iconPath        = '/home/pi/icons' # Subdirectory containing UI bitmaps (PNG format)
 saveIdx         = -1      # Image index for saving (-1 = none set yet)
 loadIdx         = -1      # Image index for loading
 scaled          = None    # pygame Surface w/last-loaded image
