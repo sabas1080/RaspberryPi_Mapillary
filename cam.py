@@ -258,7 +258,7 @@ def cameraModeCallback(): #Camenra Mode Normal or continuous camera
 	if cameraMode ==0:
 		cameraMode = 1
 		buttons[8][4].setBg('camera-mapillary-2')
-		print(cameraMode)
+		#print(cameraMode) #Debugging
 	else:
 		cameraMode = 0
 		buttons[8][4].setBg('camera-mapillary')
@@ -357,7 +357,7 @@ def filename_sec():
 			if saveIdx > 9999: saveIdx = 0 
 		#yield '%s' % (filename) + '.JPG'
 		#print ("inicio capturando") #Debugging
-        
+		
 		camera.capture(filename, splitter_port=1, use_video_port=True, format='jpeg',
 		thumbnail=None)
 		
@@ -369,12 +369,16 @@ def filename_sec():
 #Mapillary Upload Pictures
 #you must first configure mapillary environment variables
 def mapillaryUpCallback():
-    global indexSplit
-    
-    cmd = split + pathData[storeMode]
-    call ([cmd], shell=True)
-    cmd = upload + pathData[storeMode]+'/0' #Only work in directory 0 for now
-    call ([cmd], shell=True)
+	global busy
+	t = threading.Thread(target=spinner2)
+	t.start()
+	cmd = split + pathData[storeMode]
+	call ([cmd], shell=True)
+	cmd = upload + pathData[storeMode]
+	call ([cmd], shell=True)
+	busy = False
+	t.join()
+	#print("Carga completa") #Debugging
 
 # Global stuff -------------------------------------------------------------
 
@@ -633,6 +637,26 @@ def spinner():
 	buttons[screenMode][3].setBg(None)
 	buttons[screenMode][4].setBg(None)
 	screenModePrior = -1 # Force refresh
+	
+def spinner2():
+	global busy, screenMode, screenModePrior
+
+	buttons[screenMode][5].setBg('working')
+	buttons[screenMode][5].draw(screen)
+	pygame.display.update()
+
+	busy = True
+	n    = 0
+	stop = 0
+	while busy is True:
+	  buttons[screenMode][5].setBg('work-' + str(n))
+	  buttons[screenMode][5].draw(screen)
+	  pygame.display.update()
+	  n = (n + 1) % 5
+	  time.sleep(0.15)
+
+	buttons[screenMode][5].setBg('mapillary')
+	screenModePrior = -1 # Force refresh
 
 def takePicture():
 	global busy, gid, loadIdx, saveIdx, scaled, sizeMode, storeMode, storeModePrior, uid, stop
@@ -670,9 +694,6 @@ def takePicture():
 			saveIdx += 1
 			if saveIdx > 9999: saveIdx = 0
 
-	#t = threading.Thread(target=spinner)
-	#t.start()
-
 	scaled = None
 	camera.resolution = sizeData[sizeMode][0]
 	camera.crop       = sizeData[sizeMode][2]
@@ -684,21 +705,21 @@ def takePicture():
 			# Start continuous camera
 			s = threading.Thread(target=filename_sec)
 			s.start()
-			print("Pasa secuencia") #Debugging
+			#print("Pasa secuencia") #Debugging
 			screenMode =10
-			print(stop)
+			#print(stop)
 		
 		if stop == True: 
 			#camera.close()
 			s.join
 			#camera.close()
-			print("detenido") #Debugging
+			#print("detenido") #Debugging
 			screenMode=3
-			print(stop)
+			#print(stop)
 			screenModePrior = -1 # Force refresh
 		
 	  if cameraMode ==0:
-        # Start normal camera
+		# Start normal camera
 		t = threading.Thread(target=spinner)
 		t.start()
 		
@@ -805,7 +826,7 @@ yuv = bytearray(320 * 240 * 3 / 2)
 
 # Init pygame and screen
 pygame.init()
-pygame.mouse.set_visible(True) #Visible Mouse Activate for Debugging
+pygame.mouse.set_visible(False) #Visible Mouse Activate for Debugging
 screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 
 # Init camera and set up default values
