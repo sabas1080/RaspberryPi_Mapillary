@@ -875,7 +875,7 @@ while(True):
 	if screenMode >= 3 or screenMode != screenModePrior: break
 	  
   # Refresh display
-  if screenMode <= 3 or screenMode <= 9: # Viewfinder or settings modes >
+  if screenMode >= 3: # Viewfinder or settings modes >
 	stream = io.BytesIO() # Capture into in-memory stream
 	camera.capture(stream, use_video_port=True, format='raw')
 	stream.seek(0)
